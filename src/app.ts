@@ -6,13 +6,17 @@ import cookieParser from 'cookie-parser'
 import compress from 'compression';
 import helmet from 'helmet';
 import cors from 'cors';
-
+import swaggerJsdoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
+import { swaggerSpec } from './swagger';
 class App {
   public app: express.Application;
 
   constructor() {
+    console.log(`Application starting`);
     this.app = express();
     this.config();
+    this.setupSwagger();
   }
 
   private config(): void {
@@ -37,6 +41,13 @@ class App {
 
     // enable CORS - Cross Origin Resource Sharing
     this.app.use(cors());
+  }
+  private setupSwagger(): void {
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    this.app.get('/docs.json', (req, res) => {
+      res.setHeader('Content-Type', 'application/json')
+      res.send(swaggerSpec)
+    })
   }
 }
 
