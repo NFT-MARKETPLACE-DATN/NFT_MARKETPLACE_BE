@@ -1,6 +1,6 @@
 import express from "express";
 import * as bodyParser from "body-parser";
-// import { ormconfig } from "./ormconfig"
+import { ormconfig } from "./ormconfig"
 
 import cookieParser from 'cookie-parser'
 import compress from 'compression';
@@ -9,6 +9,8 @@ import cors from 'cors';
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 import { swaggerSpec } from './swagger';
+const path = require('path');
+
 class App {
   public app: express.Application;
 
@@ -21,15 +23,15 @@ class App {
 
   private config(): void {
     console.log(`App start connect to database`);
-    // ormconfig
-    //   .initialize()
-    //   .then(() => {
-    //     console.log("Data Source has been initialized!")
-    //   })
-    //   .catch((err : Error) => {
-    //     console.error("Error during Data Source initialization:", err)
-    //   })
-
+    ormconfig
+      .initialize()
+      .then(() => {
+        console.log("Data Source has been initialized!")
+      })
+      .catch((err : Error) => {
+        console.error("Error during Data Source initialization:", err)
+      })
+      
     // this.app.use(bodyParser.urlencoded({ extended: false }));
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
