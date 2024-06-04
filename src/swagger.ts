@@ -9,7 +9,7 @@ const options: swaggerJsdoc.Options = {
     info: {
       title: "Gesoten NFT Gateway API Docs",
       version: "0.0.1",
-      description: '<a href="http://localhost:3100/docs.json" target="_blank">View API definition in JSON</a><br><br>API Documentation with Swagger',
+      description: '<a href="http://localhost:3100/docs.json" target="_blank">View API definition in JSON</a><br><br> API Documentation with Swagger',
     },
     basePath: "/",
     host: "localhost:3300" ,//process.env.NODE_ENV === "development" ? "localhost:3300" : "#",
