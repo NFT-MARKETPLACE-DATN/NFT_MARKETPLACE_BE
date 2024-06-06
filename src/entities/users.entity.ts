@@ -11,7 +11,7 @@ export class User extends DefaultEntity {
     name: "user_name", 
     type: "varchar", 
     length: 255, 
-    nullable: false,
+    nullable: true,
   })
   username: string;
   @Column({
@@ -21,5 +21,12 @@ export class User extends DefaultEntity {
     nullable: false,
   })
   address: string;
+  @Column({
+    name: "balance", 
+    type: "decimal", 
+    precision: 65, scale: 0,
+    nullable: false,
+  })
+  balance: number;
   
 }
