@@ -1,5 +1,5 @@
 import app from "./app";
-
+import mintNFT from "servers/testMintNFT";
 const PORT = 3100;
 
 app.listen(PORT, async () => {
@@ -25,5 +25,27 @@ app.listen(PORT, async () => {
  *               example: "Ok"
  */
 app.get("/api/health-check", async (req, res) => {
+  res.status(200).json("Oksádfasdfssss");
+});
+
+/**
+ * @openapi
+ * /api/mint-nft:
+ *   get:
+ *     tags:
+ *     - api
+ *     summary: Health check endpoint
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     responses:
+ *       200:
+ *         description: Service is running
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Ok"
+ */
+app.get("/api/mint-nft", async (req, res) => {
+  await mintNFT();
   res.status(200).json("Oksádfasdfssss");
 });
