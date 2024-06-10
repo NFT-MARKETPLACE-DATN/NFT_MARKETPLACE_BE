@@ -1,4 +1,4 @@
-import * as anchor from '@project-serum/anchor'
+// import * as anchor from '@project-serum/anchor'
 // import {Connection, PublicKey, clusterApiUrl, Keypair, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
 import * as web3 from '@solana/web3.js';
 
@@ -24,18 +24,18 @@ import {
 import fs from 'fs'
 import path from 'path'
 import dotenv from 'dotenv'
-const BufferLayout = require('buffer-layout')
+// const BufferLayout = require('buffer-layout')
 // Load các biến môi trường từ file .env
 dotenv.config()
 
-const idl = require('../idl/testMintNFT.json')
-const idlPath = path.join(__dirname, '../idl/testMintNFT.json'); 
-const contractData = fs.readFileSync(idlPath, 'utf-8');
-const contractInfo = JSON.parse(contractData);
+// const idl = require('../idl/testMintNFT.json')
+// const idlPath = path.join(__dirname, '../idl/testMintNFT.json'); 
+// const contractData = fs.readFileSync(idlPath, 'utf-8');
+// const contractInfo = JSON.parse(contractData);
 const mintNFT = async () => {
     
-const secretKey = Uint8Array.from(contractInfo);
-const key = web3.Keypair.fromSecretKey(secretKey);
+// const secretKey = Uint8Array.from(contractInfo);
+// const key = web3.Keypair.fromSecretKey(secretKey);
 // console.log(key);
 
   const solanaURL = process.env.SOLANA_URL?.toString();
@@ -92,20 +92,20 @@ const key = web3.Keypair.fromSecretKey(secretKey);
 //     ASSOCIATED_TOKEN_PROGRAM_ID
 //   );
   //   console.log(tokenAddress);
-  const [metadataAddress] = await web3.PublicKey.findProgramAddress(
-    [Buffer.from('metadata'), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mintKeypair.publicKey.toBuffer()],
-    TOKEN_METADATA_PROGRAM_ID
-  )
+  // const [metadataAddress] = await web3.PublicKey.findProgramAddress(
+  //   [Buffer.from('metadata'), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mintKeypair.publicKey.toBuffer()],
+  //   TOKEN_METADATA_PROGRAM_ID
+  // )
   // console.log(metadataAddress);
-  const [masterEditionAddress] = await web3.PublicKey.findProgramAddress(
-    [
-      Buffer.from('metadata'),
-      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-      mintKeypair.publicKey.toBuffer(),
-      Buffer.from('edition')
-    ],
-    TOKEN_METADATA_PROGRAM_ID
-  )
+  // const [masterEditionAddress] = await web3.PublicKey.findProgramAddress(
+  //   [
+  //     Buffer.from('metadata'),
+  //     TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+  //     mintKeypair.publicKey.toBuffer(),
+  //     Buffer.from('edition')
+  //   ],
+  //   TOKEN_METADATA_PROGRAM_ID
+  // )
 //   console.log('Master edition metadata initialized')
 //   const dataLayout = BufferLayout.struct([
 //     // BufferLayout.u8('instruction'),
@@ -136,11 +136,11 @@ const key = web3.Keypair.fromSecretKey(secretKey);
 //     data: Buffer.alloc(0),
 //   })
   //   console.log(instruction);
-  const walletPath = path.join(__dirname, '../idl/wallet.json'); 
-  const wallet = fs.readFileSync(walletPath, 'utf-8');
-  const walletInfo = JSON.parse(wallet);
-  const secretKeyWallet = Uint8Array.from(walletInfo);
-  const walletPayer = web3.Keypair.fromSecretKey(secretKeyWallet);
+  // const walletPath = path.join(__dirname, '../idl/wallet.json'); 
+  // const wallet = fs.readFileSync(walletPath, 'utf-8');
+  // const walletInfo = JSON.parse(wallet);
+  // const secretKeyWallet = Uint8Array.from(walletInfo);
+  // const walletPayer = web3.Keypair.fromSecretKey(secretKeyWallet);
   
 //   const transaction = new web3.Transaction().add(instruction)
 
@@ -173,21 +173,41 @@ const key = web3.Keypair.fromSecretKey(secretKey);
   
 //   console.log('Transaction Signature:', signedTransaction)
 // console.log(tx);
-  const instruction = new web3.TransactionInstruction({
-    keys: [
-      { pubkey: walletPayer.publicKey, isSigner: true, isWritable: false },
-      { pubkey: TOKEN_METADATA_PROGRAM_ID, isSigner: false, isWritable: false }
-    ],
-    programId: key.publicKey,
-    data: Buffer.alloc(0),
-  })
+  // const instruction = new web3.TransactionInstruction({
+  //   keys: [
+  //     { pubkey: walletPayer.publicKey, isSigner: true, isWritable: false },
+  //     { pubkey: TOKEN_METADATA_PROGRAM_ID, isSigner: false, isWritable: false }
+  //   ],
+  //   programId: key.publicKey,
+  //   data: Buffer.alloc(0),
+  // })
 //    const tx =  await sendAndConfirmTransaction(
 //     connection,
 //     new Transaction().add(instruction),
 //     [walletPayer],
 //   );
-const signedTransaction = await connection.sendTransaction(new Transaction().add(instruction), [walletPayer]);
-  console.log(signedTransaction);
+// const signedTransaction = await connection.sendTransaction(new Transaction().add(instruction), [walletPayer]);
+//   console.log(signedTransaction);
+
+
+  const fromPubkey = new PublicKey("9FuCBoWm4ea8cSV1UuovAUEhe7rdCrVHMWJJRiosMRi1");
+    const toPubkey = new PublicKey("AwdSWfTwpa3PiihdDiVXmS7jJW8ui15TW2vfu5oyRESy");
+    const recentBlockhash = await connection.getRecentBlockhash();
+  const transaction = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: fromPubkey,
+      toPubkey: toPubkey,
+      lamports: 1000000, // Số lượng SOL cần gửi
+    })
+  );
+  transaction.recentBlockhash = recentBlockhash.blockhash;
+  // console.log(transaction);
+  // const signature = await connection.sendTransaction(transaction, []);
+  // const recentBlockhash = await connection.getRecentBlockhash();
+  // transaction.recentBlockhash = recentBlockhash.blockhash;
+  console.log(JSON.stringify(transaction.serialize()));
+  
+  
 }
 
   
