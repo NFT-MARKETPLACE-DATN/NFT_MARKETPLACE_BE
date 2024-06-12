@@ -1,6 +1,6 @@
 import { createCreateMetadataAccountV3Instruction, createCreateMasterEditionV3Instruction, createSetCollectionSizeInstruction } from "@metaplex-foundation/mpl-token-metadata";
 import { TOKEN_PROGRAM_ID, createAccount, createMint, mintTo } from "@solana/spl-token";
-import { Connection, Keypair, PublicKey, Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey, Transaction, sendAndConfirmTransaction,  Signer } from "@solana/web3.js";
 import {
     PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
   } from "@metaplex-foundation/mpl-token-metadata";
@@ -17,8 +17,12 @@ export const initCollection = async (
     const wallet = Keypair.fromSecretKey(
         new Uint8Array([180,235,79,84,102,152,96,102,213,153,140,176,49,228,214,142,57,102,193,5,71,26,229,58,98,95,252,99,127,59,59,93,3,5,199,47,233,144,194,189,164,186,174,181,120,158,19,16,114,171,210,46,69,236,68,90,187,50,250,39,199,22,93,94])
       )
+      const signer: Signer = {
+        publicKey: payer.publicKey,
+        secretKey: new Uint8Array(0), // Thêm null nếu không có secret key
+      };
     const mintKeypair = Keypair.generate();
-    const collectionMint = await createMint(
+    const collectionMint = await createMint(//tao 1 address collection (nhà máy in NFT) --> Token address
       connection,
       payer,// signer
       payer.publicKey, //mint Authority
@@ -33,7 +37,7 @@ export const initCollection = async (
     console.log("collectionMint",collectionMint);
     
     console.log("1")
-    const collectionTokenAccount = await createAccount(
+    const collectionTokenAccount = await createAccount(  //Token Account quản lý collection
         connection, 
         payer, 
         collectionMint, 
@@ -45,11 +49,11 @@ export const initCollection = async (
     console.log("2")
     console.log("collectionTokenAccount",collectionTokenAccount);
     
-   const w= await mintTo(
+   const w= await mintTo( // mint 1 token  collectionMint vào account collectionTokenAccount
        connection,
        payer, 
        collectionMint, 
-       collectionTokenAccount, 
+       collectionTokenAccount, //tài khoản nhận token (ở đây là NFT)
        payer, 
        1, 
        [], 
@@ -88,7 +92,8 @@ export const initCollection = async (
           isMutable: true,
           collectionDetails: null,
         },
-      }, TOKEN_METADATA_PROGRAM_ID
+      }, 
+      TOKEN_METADATA_PROGRAM_ID
     );
     console.log("collectionMeatadataIX",collectionMeatadataIX);
     
