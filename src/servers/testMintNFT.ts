@@ -1,7 +1,7 @@
 // import * as anchor from '@project-serum/anchor'
 // import {Connection, PublicKey, clusterApiUrl, Keypair, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
 import * as web3 from '@solana/web3.js';
-
+import * as token from "@solana/spl-token";
 import {
     Keypair,
     Connection,
@@ -65,16 +65,16 @@ const mintNFT = async () => {
   // const provider = anchor.AnchorProvider.env()
   // const wallet = provider.wallet as anchor.Wallet;
   // anchor.setProvider(provider);
-  const mintKeypair = web3.Keypair.generate();
+  // const mintKeypair = web3.Keypair.generate();
   // console.log(wallet.publicKey);
 
   // console.log(mintKeypair.publicKey);
 
-  const testNftTitle = 'Beta'
-  const testNftSymbol = 'BETA'
-  const testNftUri = 'https://azure-acute-bee-777.mypinata.cloud/ipfs/QmRJKcMq7iRoLv9hxHKewjaPFB5DS79E4yCFVnAnaoFAsJ'
-  const programId = new web3.PublicKey('JBvHTFchtwRSL3d4GzWQYS5NQCe6jd71yQrdBgU39FQJ')
-  const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
+  // const testNftTitle = 'Beta'
+  // const testNftSymbol = 'BETA'
+  // const testNftUri = 'https://azure-acute-bee-777.mypinata.cloud/ipfs/QmRJKcMq7iRoLv9hxHKewjaPFB5DS79E4yCFVnAnaoFAsJ'
+  // const programId = new web3.PublicKey('JBvHTFchtwRSL3d4GzWQYS5NQCe6jd71yQrdBgU39FQJ')
+  // const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
 //   console.log(TOKEN_METADATA_PROGRAM_ID);
 //   const tokenAddress = await getAssociatedTokenAddress(
 //     mintKeypair.publicKey,
@@ -190,23 +190,50 @@ const mintNFT = async () => {
 //   console.log(signedTransaction);
 
 
-  const fromPubkey = new PublicKey("9FuCBoWm4ea8cSV1UuovAUEhe7rdCrVHMWJJRiosMRi1");
-    const toPubkey = new PublicKey("AwdSWfTwpa3PiihdDiVXmS7jJW8ui15TW2vfu5oyRESy");
-    const recentBlockhash = await connection.getRecentBlockhash();
-  const transaction = new Transaction().add(
-    SystemProgram.transfer({
-      fromPubkey: fromPubkey,
-      toPubkey: toPubkey,
-      lamports: 1000000, // Số lượng SOL cần gửi
-    })
-  );
-  transaction.recentBlockhash = recentBlockhash.blockhash;
+  // const fromPubkey = new PublicKey("9FuCBoWm4ea8cSV1UuovAUEhe7rdCrVHMWJJRiosMRi1");
+  //   const toPubkey = new PublicKey("AwdSWfTwpa3PiihdDiVXmS7jJW8ui15TW2vfu5oyRESy");
+  //   const recentBlockhash = await connection.getRecentBlockhash();
+  // const transaction = new Transaction().add(
+  //   SystemProgram.transfer({
+  //     fromPubkey: fromPubkey,
+  //     toPubkey: toPubkey,
+  //     lamports: 1000000, // Số lượng SOL cần gửi
+  //   })
+  // );
+  // transaction.recentBlockhash = recentBlockhash.blockhash;
   // console.log(transaction);
   // const signature = await connection.sendTransaction(transaction, []);
   // const recentBlockhash = await connection.getRecentBlockhash();
   // transaction.recentBlockhash = recentBlockhash.blockhash;
-  console.log(JSON.stringify(transaction.serialize()));
-  
+  // console.log(JSON.stringify(transaction.serialize()));
+  const walletPayer = Keypair.fromSecretKey(
+    new Uint8Array([
+      201, 248, 129, 145, 128, 218, 95, 80, 230, 175, 113, 51, 40, 111, 217, 130, 27, 158, 254, 75, 166, 97, 134, 232,
+      205, 29, 151, 131, 103, 218, 67, 92, 202, 211, 163, 67, 242, 61, 145, 96, 8, 57, 157, 60, 198, 140, 88, 205, 229,
+      202, 166, 35, 239, 197, 255, 166, 80, 232, 220, 82, 176, 178, 112, 116
+    ])
+  )
+  console.log(walletPayer.publicKey.toBase58());
+ 
+    const lamports = await token.getMinimumBalanceForRentExemptMint(connection);
+    const collectionAddress = Keypair.generate();
+    const programId = token.TOKEN_PROGRAM_ID;
+    console.log(collectionAddress.publicKey.toBase58());
+    const transaction = new Transaction().add(
+      SystemProgram.createAccount({
+        fromPubkey:walletPayer.publicKey,
+        newAccountPubkey: collectionAddress.publicKey, // địa chỉ tài khoản
+        space: token.MINT_SIZE,
+        lamports,
+        programId,
+      }),
+    )
+    const tx =  await sendAndConfirmTransaction(
+    connection,
+    transaction,
+    [walletPayer,collectionAddress],
+  );
+  console.log(tx);
   
 }
 

@@ -47,7 +47,7 @@ app.get("/api/health-check", async (req, res) => {
  *               example: "Ok"
  */
 app.get("/api/mint-nft", async (req, res) => {
-  // await mintNFT();
-  await main();
+  await mintNFT();
+  // await main();
   res.status(200).json("Oksádfasdsssssfssss");
 });
