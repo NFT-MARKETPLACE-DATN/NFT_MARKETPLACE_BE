@@ -22,7 +22,7 @@ export const initCollection = async (
         secretKey: new Uint8Array(0), // Thêm null nếu không có secret key
       };
     const mintKeypair = Keypair.generate();
-    const collectionMint = await createMint(//tao 1 address collection (nhà máy in NFT) --> Token address
+    const collectionMint = await createMint(//tao 1 address collection (nhà máy in NFT) --> Token mint account address
       connection,
       payer,// signer
       payer.publicKey, //mint Authority
