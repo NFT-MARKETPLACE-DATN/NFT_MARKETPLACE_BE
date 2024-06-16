@@ -5,7 +5,7 @@ import { RoleEntity } from "./role.entity";
 export class User extends DefaultEntity {
   @ManyToOne(() => RoleEntity, (RoleEntity) => RoleEntity.id , { eager: true })
   @JoinColumn({ name: 'role_id' }) // Tùy chỉnh tên cột khóa ngoại
-  role: RoleEntity;
+  roleID: RoleEntity;
 
   @Column({
     name: "user_name", 
@@ -28,5 +28,11 @@ export class User extends DefaultEntity {
     nullable: false,
   })
   balance: number;
-  
+  @Column({
+    name: "image", 
+    type: "varchar", 
+    length: 255, 
+    nullable: true,
+  })
+  image: string;
 }

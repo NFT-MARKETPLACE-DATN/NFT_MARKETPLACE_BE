@@ -1,4 +1,3 @@
-import { UUID } from "crypto";
 import {
   PrimaryGeneratedColumn,
   Column,
@@ -7,8 +6,8 @@ import {
 } from "typeorm";
 
 export abstract class DefaultEntity {
-  @PrimaryGeneratedColumn("uuid")
-  id: UUID;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({
     type: "bool",
