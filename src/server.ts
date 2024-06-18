@@ -52,11 +52,6 @@ app.get("/api/mint-nft", async (req, res) => {
   res.status(200).json("Oksádfasdsssssfssss");
 });
 
-
-app.get("/api/create-nft", async (req, res) => {
-  res.status(200).json("Oksádfasdfssssssss");
-});
-
 /**
  * @openapi
  * /api/create-nft:
@@ -81,8 +76,6 @@ app.get("/api/create-nft", async (req, res) => {
  *               type: string
  *               example: "Ok"
  */
-app.get("/api/mint-nft", async (req, res) => {
-  await mintNFT();
-  // await main();
-  res.status(200).json("Oksádfasdsssssfssss");
+app.get("/api/create-nft", async (req, res) => {
+  res.status(200).json("Oksádfasdfssssssss");
 });
