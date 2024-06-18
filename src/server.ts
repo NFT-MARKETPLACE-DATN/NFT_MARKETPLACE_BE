@@ -51,3 +51,38 @@ app.get("/api/mint-nft", async (req, res) => {
   // await main();
   res.status(200).json("Oksádfasdsssssfssss");
 });
+
+
+app.get("/api/create-nft", async (req, res) => {
+  res.status(200).json("Oksádfasdfssssssss");
+});
+
+/**
+ * @openapi
+ * /api/create-nft:
+ *   get:
+ *     tags:
+ *     - api
+ *     summary: create NFT
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     responses:
+ *       200:
+ *         description: Service is running
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Ok"
+ *      400:
+ *         description: Service is running
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Ok"
+ */
+app.get("/api/mint-nft", async (req, res) => {
+  await mintNFT();
+  // await main();
+  res.status(200).json("Oksádfasdsssssfssss");
+});
