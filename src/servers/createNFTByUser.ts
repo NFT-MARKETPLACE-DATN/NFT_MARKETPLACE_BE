@@ -3,8 +3,8 @@ import { ormconfig } from "../ormconfig";
 import logger from "../logger/winston";
 
 
-const createNFTBuyUser = () =>{
+const createNFTByUser = () =>{
 
 }
 
-export default createNFTBuyUser;
+export default createNFTByUser;
