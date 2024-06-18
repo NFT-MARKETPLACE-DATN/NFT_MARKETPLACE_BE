@@ -25,7 +25,7 @@ export class User extends DefaultEntity {
     name: "balance", 
     type: "decimal", 
     precision: 65, scale: 0,
-    nullable: false,
+    nullable: true,
   })
   balance: number;
   @Column({
@@ -35,4 +35,12 @@ export class User extends DefaultEntity {
     nullable: true,
   })
   image: string;
+  @Column({
+    name: "background", 
+    type: "varchar", 
+    length: 255, 
+    nullable: true,
+  })
+  background: string;
+
 }
