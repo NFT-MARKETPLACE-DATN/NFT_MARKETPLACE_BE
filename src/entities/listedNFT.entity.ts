@@ -25,7 +25,7 @@ nftID: Nfts;
   })
   isList: boolean;
   @Column({
-    type: "number",
+    type: "int",
     default: false,
     name:"trending"
   })

@@ -1,11 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn ,Unique} from 'typeorm';
 import { DefaultEntity } from "./default.entity";
 import { RoleEntity } from "./role.entity";
 @Entity("users")
+@Unique(['address']) 
 export class User extends DefaultEntity {
   @ManyToOne(() => RoleEntity, (RoleEntity) => RoleEntity.id , { eager: true })
   @JoinColumn({ name: 'role_id' }) // Tùy chỉnh tên cột khóa ngoại
-  roleID: RoleEntity;
+  roleID: number;
 
   @Column({
     name: "user_name", 
