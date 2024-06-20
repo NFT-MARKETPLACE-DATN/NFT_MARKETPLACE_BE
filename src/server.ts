@@ -1,7 +1,8 @@
 import app from './app'
 // import mintNFT from "servers/testMintNFT";
 // import { main } from "servers/tranferSOL";
-import * as userService from './services/getUserService'
+import * as userService from './services/userService'
+import * as nftInfo from "./repositories/nftInfoRepository"
 const PORT = 3100
 
 app.listen(PORT, async () => {
@@ -96,7 +97,7 @@ app.get('/api/mint-nft', async (req, res) => {
 app.get('/api/login', async (req, res) => {
   let address = req.query.address?.toString()
   if (address) {
-    const result = await userService.getUserService(address)
+    const result = await userService.userLogin(address)
     res.status(200).json({ 
       success: true, 
       message: 'Login successful',
@@ -115,29 +116,49 @@ app.get('/api/login', async (req, res) => {
  *    create-nft:
  *      type: object
  *      required:
- *        - username
- *        - password
+ *        - nftName
+ *        - image
+ *        - description
+ *        - attribute
+ *        - mintAddress
+ *        - tokenAccount
  *      properties:
- *        username:
+ *        nftName:
  *          type: string
- *        password:
+ *        image:
  *          type: string
+ *        description:
+ *          type: string
+ *        attribute:
+ *          type: array
+ *          items:
+ *             type: object
+ *             properties:
+ *              trait_type:
+ *                type: string
+ *              value:
+ *                type: string
+ *        mintAddress:
+ *          type: string
+ *        tokenAccount:
+ *          type: string
+ * 
  */
 /**
  * @openapi
  * /api/create-nft:
- *   get:
+ *   post:
  *     tags:
  *     - api
  *     summary: Create NFT by Used 
  *     description: Returns a simple status message to indicate that the service is running.
  *     parameters:
  *       - in: query
- *         name: address
+ *         name: user_id
  *         required: true
  *         schema:
- *           type: string
- *         description: Enter address.
+ *           type: number
+ *         description: Enter user_id.
  *     requestBody:
  *      required: true
  *      content:
@@ -169,16 +190,19 @@ app.get('/api/login', async (req, res) => {
  *                    type: string
  *                    default: Wrong 
  */
-app.get('/api/create-nft', async (req, res) => {
+app.post('/api/create-nft', async (req, res) => {
+  const data = req.body;
+// console.log(data);
+await nftInfo.addNewNft(1,data)
   // let address = req.query.address?.toString()
   // if (address) {
   //   const result = await userService.getUserService(address)
-  //   res.status(200).json({ 
-  //     success: true, 
-  //     message: 'Login successful',
-  //     userInfo:result
-  //   }
-  // )
+    res.status(200).json({ 
+      success: true, 
+      message: 'Login successful',
+      // userInfo:result
+    }
+  )
   // } else {
   //   res.status(400).json({ success: false, message: 'Address is required' })
   // }
