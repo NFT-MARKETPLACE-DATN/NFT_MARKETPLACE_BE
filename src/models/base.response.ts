@@ -5,5 +5,5 @@ export class BaseResponse {
 }
 
 export class GenericBaseResponse<T> extends BaseResponse{
-    data: T
+    data: T | null
 }

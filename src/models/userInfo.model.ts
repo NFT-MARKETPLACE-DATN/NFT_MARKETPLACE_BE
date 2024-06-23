@@ -1,3 +1,4 @@
+import { RoleEntity } from "entities/role.entity";
 export interface UserInfoModel {
     id?: Number,
     is_delete?: boolean,
@@ -8,7 +9,7 @@ export interface UserInfoModel {
     balance: Number,
     image?: string | null,
     background?: string | null,
-    roleID: Number
+    roleID: number
    
 }
 export interface UpdateUserModel {

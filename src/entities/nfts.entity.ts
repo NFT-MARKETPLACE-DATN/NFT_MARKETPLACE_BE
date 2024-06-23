@@ -1,23 +1,30 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn,Unique,OneToOne } from 'typeorm';
 import { DefaultEntity } from "./default.entity";
 import { User } from './users.entity';
+import { ListNFT } from './listedNFT.entity';
 @Entity("nfts")
+@Unique(['mintAddress','tokenAccount']) 
 export class Nft extends DefaultEntity {
-@ManyToOne(() => User, (User) => User.id , { eager: true })
-@JoinColumn({ name: 'user_id' }) // Tùy chỉnh tên cột khóa ngoại
-userID: User;
+
   @Column({
     name: "nft_name", 
     type: "varchar", 
     length: 255, 
-    nullable: true,
+    nullable: false,
   })
   nftName: string;
+  @Column({
+    name: "symbol", 
+    type: "varchar", 
+    length: 255, 
+    nullable: false,
+  })
+  symbol: string;
   @Column({
     name: "image", 
     type: "varchar", 
     length: 255, 
-    nullable: true,
+    nullable: false,
   })
   image: string;
   @Column({
@@ -36,18 +43,28 @@ userID: User;
     name: "mint_address", 
     type: "varchar", 
     length: 255, 
-    nullable: true,
+    nullable: false,
   })
   mintAddress: string;// nft mint address
   @Column({
     name: "token_account", 
     type: "varchar", 
     length: 255, 
-    nullable: true,
+    nullable: false,
   })
-  tokenAcount: string; //nft token account
+  tokenAccount: string; //nft token account
+  
+  // @Column({ type: 'int',name: 'user_id'})
+  // userID: number; // Đây là ID của RoleEntity
+  // @Column({ type: 'int',name: 'user_created'})
+  // userCreated: number;
 
-  @ManyToOne(() => User, (User) => User.id , { eager: true })
+  @ManyToOne(() => User, (User) => User.nfts , { eager: true })
+  @JoinColumn({ name: 'user_id' }) // Tùy chỉnh tên cột khóa ngoại
+  userID: User | Number;
+  @ManyToOne(() => User, (User) => User.nfts , { eager: true })
   @JoinColumn({ name: 'user_created' }) // Tùy chỉnh tên cột khóa ngoại
-  userCreated: User;
+  userCreated: User | Number;
+  @OneToOne(()=>ListNFT,(ListNFT)=>ListNFT.nftID)
+  nftList: ListNFT;
   }

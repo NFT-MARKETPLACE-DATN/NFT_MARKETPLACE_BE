@@ -1,12 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn ,Unique} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn ,Unique,OneToMany} from 'typeorm';
 import { DefaultEntity } from "./default.entity";
 import { RoleEntity } from "./role.entity";
+import { Nft } from './nfts.entity';
 @Entity("users")
 @Unique(['address']) 
 export class User extends DefaultEntity {
-  @ManyToOne(() => RoleEntity, (RoleEntity) => RoleEntity.id , { eager: true })
-  @JoinColumn({ name: 'role_id' }) // Tùy chỉnh tên cột khóa ngoại
-  roleID: number;
 
   @Column({
     name: "user_name", 
@@ -43,5 +41,17 @@ export class User extends DefaultEntity {
     nullable: true,
   })
   background: string;
+  
+  @Column({ type: 'int',name: 'role_id'})
+  roleID: number; // Đây là ID của RoleEntity
+  @ManyToOne(() => RoleEntity, (RoleEntity) => RoleEntity.id , { eager: true })
+  @JoinColumn({ name: 'role_id', referencedColumnName: 'id', }) // Tùy chỉnh tên cột khóa ngoại
+  role: RoleEntity 
 
+  @OneToMany(() => Nft, nft => nft.userID)
+  nfts: Nft[];
+
+  @OneToMany(() => Nft, nft => nft.userCreated)
+  createdNfts: Nft[];
+  
 }

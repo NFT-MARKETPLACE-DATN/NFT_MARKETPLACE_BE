@@ -1,42 +1,37 @@
-import { ormconfig } from "../ormconfig"
+import { ormconfig } from "../ormconfig";
 import logger from "../logger/winston";
 import { User } from "../entities/users.entity";
 import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.model";
-import { BaseResponse } from "models/base.response";
+import { BaseResponse,GenericBaseResponse } from "models/base.response";
 import * as solanaWeb3 from "@solana/web3.js";
 import * as envConfig from "../env-config.json";
 
-const checkUser = async (userAddress :string) : Promise<User|any>=>{
+const checkUser = async (userAddress :string) : Promise<UserInfoModel|null>=>{
     try {
         const userRepository = ormconfig.getRepository(User);
-        const userInfo = await userRepository.findOneBy({ address: userAddress });
-        // console.log(userInfo);
+        const userInfo = await userRepository.findOneBy({ address:userAddress  });
+        console.log(userInfo);
+        
         return userInfo;
 
     } catch (error) {
-        return {
-            success: false,
-            message: "Faield to save NFT info to database",
-            message_code: 400
-        };
+        return null;
     }
 
     
 }
-const addNewUser = async(userAddress :string): Promise<BaseResponse | UserInfoModel> =>{
+const addNewUser = async(userAddress :string): Promise<UserInfoModel|null> =>{
     try {
        
         let nativeBalanceSOL = await balanceSOL(userAddress);
-        const userInfoEntity = new User();
-        userInfoEntity.address = userAddress;
-        userInfoEntity.username = userAddress;
-        userInfoEntity.roleID = 2;
-        userInfoEntity.balance = nativeBalanceSOL;
+        const userInfo = new User();
+        userInfo.address = userAddress;
+        userInfo.username = userAddress;
+        userInfo.roleID = 2
+        userInfo.balance = nativeBalanceSOL;
         await ormconfig.transaction(async (transactionalEntityManager) => {
-            await transactionalEntityManager.save(userInfoEntity);
+            await transactionalEntityManager.save(userInfo);
         });
-        // console.log(userInfoEntity);
-        
         // const userInfo = {
         //     is_delete: false,
         //     username: userAddress,
@@ -48,13 +43,11 @@ const addNewUser = async(userAddress :string): Promise<BaseResponse | UserInfoMo
         //     background: null,
         //     roleID: 2
         // }
-        return userInfoEntity;
+        return userInfo;
     } catch (error) {
-        return {
-            success: false,
-            message: "Faield to save NFT info to database",
-            message_code: 400
-        };
+        console.log(error);
+        
+        return null;
     }
 
 }

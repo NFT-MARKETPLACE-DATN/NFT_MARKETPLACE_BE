@@ -10,13 +10,13 @@ export class ListNFT extends DefaultEntity {
 
 @OneToOne(() => Nft, (Nft) => Nft.id , { eager: true })
 @JoinColumn({ name: 'nft_id' }) // Tùy chỉnh tên cột khóa ngoại
-nftID: Nft;
+nftID: Nft | Number;
 @Column({
-    type: "bool",
+    type: "int",
     default: false,
     name:"price"
   })
-  price: boolean;
+  price: number;
 
 @Column({
     type: "bool",
@@ -26,7 +26,7 @@ nftID: Nft;
   isList: boolean;
   @Column({
     type: "int",
-    default: false,
+    default: null,
     name:"trending"
   })
   trending: number;
