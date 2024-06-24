@@ -12,7 +12,7 @@ export const userLogin = async (address:string): Promise<GenericBaseResponse<Use
             return {
               success: false,
               data: null,
-              message:'Faield to save user info to database',
+              message:' Invalid address faield to save user info to database',
               message_code:400
             }
         }

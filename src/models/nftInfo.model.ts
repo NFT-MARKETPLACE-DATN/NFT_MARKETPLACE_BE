@@ -17,4 +17,6 @@ export interface GenericNftResponse extends NftInfoModel{
   ownAddress:string;
   createdAddress:string;
   price?:Number;
+  isTrending?:boolean;
+  isList?:boolean;
 }

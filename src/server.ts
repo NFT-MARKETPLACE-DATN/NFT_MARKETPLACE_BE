@@ -56,10 +56,10 @@ app.get('/api/mint-nft', async (req, res) => {
 
 /**
  * @openapi
- * /api/login:
+ * /api/account/login:
  *   get:
  *     tags:
- *     - api
+ *     - account
  *     summary: Used for login.
  *     description: Returns a simple status message to indicate that the service is running.
  *     parameters:
@@ -107,7 +107,7 @@ app.get('/api/mint-nft', async (req, res) => {
  *                    type: string
  *                    default: Server Error
  */
-app.get('/api/login', async (req, res) => {
+app.get('/api/account/login', async (req, res) => {
   let address = req.query.address?.toString()
   if (address) {
     const result = await userService.userLogin(address);
@@ -120,7 +120,7 @@ app.get('/api/login', async (req, res) => {
     }else{
       res.status(500).json({ 
         success: false, 
-        message: 'Login fail',
+        message: result.message,
         data:null 
       })
     }
@@ -170,10 +170,10 @@ app.get('/api/login', async (req, res) => {
  */
 /**
  * @openapi
- * /api/create-nft:
+ * /api/nft/create-nft:
  *   post:
  *     tags:
- *     - api
+ *     - nftApi
  *     summary: Create NFT by Used 
  *     description: Returns a simple status message to indicate that the service is running.
  *     parameters:
@@ -230,7 +230,7 @@ app.get('/api/login', async (req, res) => {
  *                    type: string
  *                    default: Server Error
  */
-app.post('/api/create-nft', async (req, res) => {
+app.post('/api/nft/create-nft', async (req, res) => {
   const data = req.body;
 // console.log(data);
 // await nftInfo.addNewNft(1,data);
@@ -256,10 +256,10 @@ app.post('/api/create-nft', async (req, res) => {
 
 /**
  * @openapi
- * /api/get-nft-by-id:
+ * /api/nft/get-nft-by-id:
  *   get:
  *     tags:
- *     - api
+ *     - nftApi
  *     summary: Get NFT by Id 
  *     description: Returns a simple status message to indicate that the service is running.
  *     parameters:
@@ -307,7 +307,7 @@ app.post('/api/create-nft', async (req, res) => {
  *                    type: string
  *                    default: Server Error
  */
-app.get('/api/get-nft-by-id', async (req, res) => {
+app.get('/api/nft/get-nft-by-id', async (req, res) => {
   let nftID = Number(req.query.nftId);
   if (nftID) {
     const result = await nftService.getNftByID(nftID);
@@ -328,4 +328,129 @@ app.get('/api/get-nft-by-id', async (req, res) => {
   } else {
     res.status(400).json({ success: false, message: 'Address is required' })
   }
+})
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     NFT:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         name:
+ *           type: string
+ *         is_delete:
+ *           type: boolean
+ *     ListedNFT:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         price:
+ *           type: number
+ *         is_delete:
+ *           type: boolean
+ *         nftID:
+ *           $ref: '#/components/schemas/NFT'
+ */
+/**
+ * @openapi
+ * /api/nft/get-nft-listed:
+ *   get:
+ *     tags:
+ *     - nftApi
+ *     summary: Used for login.
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: The search keyword
+ *       - in: query
+ *         name: pageIndex
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Enter page index.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Enter page size.
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: ["ASC","DESC"]
+ *           default: "DESC"
+ *         description: The order direction
+ *       - in: query
+ *         name: isTrending
+ *         schema:
+ *           type: boolean
+ *           default: false
+ *         description: List NFT by trending
+ *     responses:
+ *       200:
+ *         description: A list of NFTs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ListedNFT'
+ *                 total:
+ *                   type: integer
+ *                 pageIndex:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *       400:
+ *         description: The parameters used for the API are incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Wrong username or password
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Server Error
+ */
+app.get('/api/nft/get-nft-listed', async (req, res) => {
+  const pageIndex = parseInt(req.query.pageIndex as string) || 1;
+  const pageSize = parseInt(req.query.pageSize as string) || 10;
+  const search = (req.query.search as string) || '';
+  const order = (req.query.order as string) === 'ASC' ? 'ASC' : 'DESC';
+  const isTrending = req.query.isTrending === 'true' ? true : false;
+  
+  const result = await nftService.getNftListed(pageIndex,pageSize,order,search,isTrending)
+  console.log(result);
+  
+  res.status(200).json({ 
+    success: true, 
+    message:"dsads",
+    data : result //JSON.parse(result)
+  })
 })

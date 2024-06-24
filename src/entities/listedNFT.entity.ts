@@ -3,7 +3,7 @@ import { DefaultEntity } from "./default.entity";
 import { User } from './users.entity';
 import { Nft } from './nfts.entity';
 @Entity("list_nft")
-export class ListNFT extends DefaultEntity {
+export class ListedNFT extends DefaultEntity {
 // @ManyToOne(() => User, (User) => User.id , { eager: true })
 // @JoinColumn({ name: 'user_id' }) // Tùy chỉnh tên cột khóa ngoại
 // userID: User;
@@ -12,7 +12,8 @@ export class ListNFT extends DefaultEntity {
 @JoinColumn({ name: 'nft_id' }) // Tùy chỉnh tên cột khóa ngoại
 nftID: Nft | Number;
 @Column({
-    type: "int",
+    type: "decimal", 
+    precision: 65, scale: 0,
     default: false,
     name:"price"
   })
@@ -25,9 +26,9 @@ nftID: Nft | Number;
   })
   isList: boolean;
   @Column({
-    type: "int",
+    type: "bool",
     default: null,
-    name:"trending"
+    name:"is_trending"
   })
-  trending: number;
+  isTrending: boolean;
 }

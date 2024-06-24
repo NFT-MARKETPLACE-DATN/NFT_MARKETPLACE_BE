@@ -3,7 +3,7 @@ import logger from "../logger/winston";
 import { BaseResponse } from "models/base.response";
 import { NftInfoModel,GenericNftResponse } from "models/nftInfo.model";
 import { Nft } from "../entities/nfts.entity";
-import {ListNFT } from "../entities/listedNFT.entity";
+import {ListedNFT } from "../entities/listedNFT.entity";
 import { User } from "../entities/users.entity";
 const connectionManager = ormconfig.manager;
 
@@ -52,7 +52,77 @@ const addNewNft = async (userID:number,data:NftInfoModel):Promise<BaseResponse> 
     }
     
 };
+const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC"|"ASC", search?:string,isTrending?:boolean): Promise<any> =>{
+    try {
+        const queryBuilderNftListed = ormconfig
+            .getRepository(ListedNFT)
+            .createQueryBuilder('n')
+            .leftJoinAndSelect('n.nftID','nftInfo')
+            .select("nftInfo.*")
+            .addSelect("n.price",'price')
+            .addSelect("n.isTrending",'isTrending')
+            .addSelect("n.isList",'isList')
+            .where("nftInfo.is_delete = 0")
+            .andWhere("n.is_delete = 0")
+            .andWhere("n.isList = 1");
 
+        if(search){
+            console.log("fasd");
+            
+            queryBuilderNftListed.andWhere("nftInfo.nftName LIKE :search", { search: `%${search}%` });
+        }
+        if(isTrending){
+            console.log("fasdf");
+            
+            queryBuilderNftListed.andWhere("n.isTrending = 1");
+        }
+        // queryBuilderNftListed.orderBy("price",order);
+        const nftListedEntities = await queryBuilderNftListed
+        .orderBy("price",order)
+        .skip((pageIndex - 1) * pageSize)
+        .limit(pageSize)
+        .getRawMany();
+        const totalRecord = await ormconfig
+        .getRepository(ListedNFT)
+        .createQueryBuilder('n')
+        .leftJoinAndSelect('n.nftID','nftInfo')
+        .where("nftInfo.is_delete = 0")
+        .andWhere("n.is_delete = 0")
+        .andWhere("n.isList = 1")
+        .orderBy("price",order)
+        .skip((pageIndex - 1) * pageSize)
+        .limit(pageSize)
+        .getCount();
+        // const nftListedEntities = await ormconfig
+        //     .getRepository(ListedNFT)
+        //     .createQueryBuilder('n')
+        //     .leftJoinAndSelect('n.nftID','nftInfo')
+        //     .select("nftInfo.*")
+        //     .addSelect("n.price",'price')
+        //     .where("nftInfo.is_delete = 0")
+        //     .andWhere("n.is_delete = 0")
+        //     .orderBy("price","ASC")
+        //     .skip((pageIndex - 1) * pageSize)
+        //     .take(pageSize)
+        //     .getRawMany();
+        // const totalRecord = await ormconfig
+        //     .getRepository(ListedNFT)
+        //     .createQueryBuilder('n')
+        //     .leftJoinAndSelect('n.nftID','nftInfo')
+        //     // .select("nftInfo.*")
+        //     // .addSelect("n.price",'price')
+        //     .where("nftInfo.is_delete = 0")
+        //     .andWhere("n.is_delete = 0")
+        //     .getCount();
+        let res = []; 
+
+        console.log(totalRecord);
+        return nftListedEntities;
+                                     
+    } catch (error) {
+        
+    }
+}
 
 const getNftByID = async (nftID:number):Promise<GenericNftResponse|null> =>{
     try {
@@ -62,13 +132,14 @@ const getNftByID = async (nftID:number):Promise<GenericNftResponse|null> =>{
         // return nftInfo;
         const nft = await connectionManager.getRepository(Nft)
             .createQueryBuilder('nft')
-            .leftJoinAndSelect("nft.nftList", "nftList")
+            .leftJoinAndSelect("nft.nftListed", "nftListed")
             .leftJoinAndSelect("nft.userID", "userOwn")
             .leftJoinAndSelect("nft.userCreated", "userCreated")
             .select('nft.*')
             .addSelect('userOwn.address','ownAddress')
             .addSelect('userCreated.address','createdAddress')
-            .addSelect("nftList.price",'price')
+            .addSelect("nftListed.price",'price')
+            .addSelect("nftListed.isList",'isList')
             .where('nft.id = :id', { id: nftID })
             .getRawOne();
             console.log(nft);
@@ -84,4 +155,4 @@ const getNftByID = async (nftID:number):Promise<GenericNftResponse|null> =>{
     }
     
 }
-export {addNewNft,getNftByID}
+export {addNewNft,getNftByID,getManyNftListed}

@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn,Unique,OneToOne } from 'typeorm';
 import { DefaultEntity } from "./default.entity";
 import { User } from './users.entity';
-import { ListNFT } from './listedNFT.entity';
+import { ListedNFT } from './listedNFT.entity';
 @Entity("nfts")
 @Unique(['mintAddress','tokenAccount']) 
 export class Nft extends DefaultEntity {
@@ -65,6 +65,6 @@ export class Nft extends DefaultEntity {
   @ManyToOne(() => User, (User) => User.nfts , { eager: true })
   @JoinColumn({ name: 'user_created' }) // Tùy chỉnh tên cột khóa ngoại
   userCreated: User | Number;
-  @OneToOne(()=>ListNFT,(ListNFT)=>ListNFT.nftID)
-  nftList: ListNFT;
+  @OneToOne(()=>ListedNFT,(ListedNFT)=>ListedNFT.nftID)
+  nftListed: ListedNFT;
   }
