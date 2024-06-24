@@ -54,45 +54,83 @@ const addNewNft = async (userID:number,data:NftInfoModel):Promise<BaseResponse> 
 };
 const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC"|"ASC", search?:string,isTrending?:boolean): Promise<any> =>{
     try {
+        console.log(pageIndex,pageSize);
+        
         const queryBuilderNftListed = ormconfig
             .getRepository(ListedNFT)
             .createQueryBuilder('n')
-            .leftJoinAndSelect('n.nftID','nftInfo')
-            .select("nftInfo.*")
-            .addSelect("n.price",'price')
-            .addSelect("n.isTrending",'isTrending')
-            .addSelect("n.isList",'isList')
+            .leftJoinAndSelect('n.nftID', 'nftInfo')
+            // .leftJoinAndSelect('n.nftID','nftInfo')
+            // .select("nftInfo.*")
+            // .addSelect("n.id",'n_id')
+            // .addSelect("n.price",'price')
+            // .addSelect("n.isTrending",'isTrending')
+            // .addSelect("n.isList",'isList')
+            .select([
+                'n.id',
+                'n.price',
+                'n.isTrending',
+                'n.isList',
+                "nftInfo.nftName",
+        
+            ])
+            // .select([
+            //     'nftInfo.id AS nftId',
+            //     'nftInfo.nftName AS name',
+            //     'nftInfo.image AS image',
+            //     'nftInfo.description AS description',
+            //     'n.price AS price',
+            //     'n.isTrending',
+            //     'n.isList',
+            //     'n.id'
+            //   ])
+            // .select([
+            //     'nftInfo.id',
+            //     'nftInfo.nftName',
+            //     'nftInfo.image',
+            //     'nftInfo.description',
+            //     'n.price',
+            //     'n.isTrending',
+            //     'n.isList'
+            //   ])
+            // .select([
+            //     'n.id',
+            //     'n.price',
+            //     'n.isTrending',
+            //     'n.isList',
+            //     'nftInfo.id AS nftId',
+            //     'nftInfo.nftName',
+            //     'nftInfo.image',
+            //     'nftInfo.description'
+            //   ])
             .where("nftInfo.is_delete = 0")
             .andWhere("n.is_delete = 0")
             .andWhere("n.isList = 1");
 
         if(search){
-            console.log("fasd");
-            
             queryBuilderNftListed.andWhere("nftInfo.nftName LIKE :search", { search: `%${search}%` });
         }
         if(isTrending){
-            console.log("fasdf");
-            
             queryBuilderNftListed.andWhere("n.isTrending = 1");
         }
+        const totalRecord = await queryBuilderNftListed
+        // .orderBy("price",order)
+        // .skip((pageIndex - 1) * pageSize)
+        // .limit(pageSize)
+        .getCount();
+        console.log(totalRecord);
+        let skip = (pageIndex - 1) * pageSize;
+        skip = skip > 0 ? skip : 0;
         // queryBuilderNftListed.orderBy("price",order);
         const nftListedEntities = await queryBuilderNftListed
-        .orderBy("price",order)
-        .skip((pageIndex - 1) * pageSize)
-        .limit(pageSize)
-        .getRawMany();
-        const totalRecord = await ormconfig
-        .getRepository(ListedNFT)
-        .createQueryBuilder('n')
-        .leftJoinAndSelect('n.nftID','nftInfo')
-        .where("nftInfo.is_delete = 0")
-        .andWhere("n.is_delete = 0")
-        .andWhere("n.isList = 1")
-        .orderBy("price",order)
-        .skip((pageIndex - 1) * pageSize)
-        .limit(pageSize)
-        .getCount();
+        // .orderBy("price",order)
+        .skip(skip)
+        .take(pageSize)
+        .getMany(); //getRawMany 
+       console.log("đá",nftListedEntities);
+       
+        // const paginatedEntities = nftListedEntities.slice(skip, skip + pageSize);
+        // console.log(paginatedEntities);
         // const nftListedEntities = await ormconfig
         //     .getRepository(ListedNFT)
         //     .createQueryBuilder('n')
@@ -116,10 +154,11 @@ const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC
         //     .getCount();
         let res = []; 
 
-        console.log(totalRecord);
+       
         return nftListedEntities;
                                      
     } catch (error) {
+        console.log(error);
         
     }
 }

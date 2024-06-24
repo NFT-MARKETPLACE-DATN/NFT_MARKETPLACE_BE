@@ -446,7 +446,7 @@ app.get('/api/nft/get-nft-listed', async (req, res) => {
   const isTrending = req.query.isTrending === 'true' ? true : false;
   
   const result = await nftService.getNftListed(pageIndex,pageSize,order,search,isTrending)
-  console.log(result);
+  // console.log(result);
   
   res.status(200).json({ 
     success: true, 
