@@ -2,10 +2,16 @@ import * as nftRepository from "../repositories/nftInfoRepository";
 import { NftInfoModel,GenericNftResponse } from "models/nftInfo.model";
 import { BaseResponse,GenericBaseResponse } from "models/base.response";
 
-const createNft = async (userID:number,data:any) =>{
+const createNft = async (userID:number,data:any):Promise<BaseResponse> =>{
    const result =  await nftRepository.addNewNft(userID,data);
    return result;
   
+}
+const listNftToMarket = async(data:any,userID:Number,listAction:boolean):Promise<BaseResponse>=>{
+   const result =  await nftRepository.listNftToMarket(data);
+   console.log(listAction);
+   
+   return result;
 }
 
 const getNftByID = async (nftID:number) :Promise<GenericBaseResponse<GenericNftResponse>>=>{
@@ -48,4 +54,4 @@ const getNftListed = async (pageIndex:number,pageSize:number,order?:"DESC"|"ASC"
     // }
     // return result;
 }
-export {createNft,getNftByID,getNftListed}
+export {createNft,listNftToMarket,getNftByID,getNftListed}

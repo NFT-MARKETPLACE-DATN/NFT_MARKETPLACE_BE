@@ -1,10 +1,11 @@
 import { ormconfig } from "../ormconfig"
 import logger from "../logger/winston";
 import { BaseResponse } from "models/base.response";
-import { NftInfoModel,GenericNftResponse } from "models/nftInfo.model";
+import { NftInfoModel,GenericNftResponse, NftListModel } from "models/nftInfo.model";
 import { Nft } from "../entities/nfts.entity";
 import {ListedNFT } from "../entities/listedNFT.entity";
 import { User } from "../entities/users.entity";
+import { TransactionUser } from "entities/transactionUser.entity";
 const connectionManager = ormconfig.manager;
 
 const addNewNft = async (userID:number,data:NftInfoModel):Promise<BaseResponse> =>{
@@ -52,10 +53,77 @@ const addNewNft = async (userID:number,data:NftInfoModel):Promise<BaseResponse> 
     }
     
 };
+const listNftToMarket = async (data:NftListModel):Promise<BaseResponse> =>{
+    try {
+        
+        const nftListRepository = ormconfig.getRepository(ListedNFT);
+        const nftRepository = ormconfig.getRepository(Nft);
+        const nft = await nftListRepository
+            .createQueryBuilder('nftList')
+            .where("nftList.nftID = :nftID",{nftID:data.nftID})
+            .getOne();
+        // console.log(nft);
+        // const userRepository = ormconfig.getRepository(User);
+        // const userInfo = await userRepository.findOneBy({ id: userID });
+        // if (!userInfo) {
+        //     throw new Error("User not found");
+        // }
+        // console.log(data);
+        if(nft){
+            if(nft.price != data.price || !nft.isList){
+                await nftListRepository.update({nftID:data.nftID},{
+                    isList:true,
+                    price:data.price,
+                    isTrending:false
+                })
+                return {
+                    success:true,
+                    message:"List NFT success",
+                    message_code:200
+                }
+            }else{
+                return {
+                    success:false,
+                    message:"price not change || NFT is listed",
+                    message_code:400
+                }
+            }
+        }else{
+        const checkNft =await nftRepository.findOneBy({id:data.nftID});
+        if(checkNft){
+            const nftInfo = new ListedNFT();
+                Object.assign(nftInfo, {
+                    ...data,
+                });
+            await nftListRepository.save(nftInfo);
+            return{
+                success:true,
+                message:"List NFT success",
+                message_code:200
+            }
+        }else{
+            return{
+                success:false,
+                message:"NFT not exit",
+                message_code:400
+            }}
+        }
+       
+
+        
+    } catch (error:any) {
+        console.log(error.message);
+        
+        return {
+            success:false,
+            message:error.message,
+            message_code:400
+        }
+    }
+    
+};
 const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC"|"ASC", search?:string,isTrending?:boolean): Promise<any> =>{
     try {
-        console.log(pageIndex,pageSize);
-        
         const queryBuilderNftListed = ormconfig
             .getRepository(ListedNFT)
             .createQueryBuilder('n')
@@ -72,7 +140,7 @@ const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC
                 'n.isTrending',
                 'n.isList',
                 "nftInfo.nftName",
-        
+                "nftInfo.image"
             ])
             // .select([
             //     'nftInfo.id AS nftId',
@@ -119,12 +187,12 @@ const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC
         // .limit(pageSize)
         .getCount();
         console.log(totalRecord);
-        let skip = (pageIndex - 1) * pageSize;
-        skip = skip > 0 ? skip : 0;
+        // let skip = (pageIndex - 1) * pageSize;
+        // skip = skip > 0 ? skip : 0;
         // queryBuilderNftListed.orderBy("price",order);
         const nftListedEntities = await queryBuilderNftListed
-        // .orderBy("price",order)
-        .skip(skip)
+        .orderBy("price",order)
+        .skip((pageIndex - 1) * pageSize)
         .take(pageSize)
         .getMany(); //getRawMany 
        console.log("đá",nftListedEntities);
@@ -194,4 +262,92 @@ const getNftByID = async (nftID:number):Promise<GenericNftResponse|null> =>{
     }
     
 }
-export {addNewNft,getNftByID,getManyNftListed}
+
+const getManyNftByUser =async (pageIndex: number, pageSize: number,order?:"DESC"|"ASC", search?:string,isTrending?:boolean): Promise<any> =>{
+    try {
+        const queryBuilderNftByUser = ormconfig
+            .getRepository(Nft)
+            .createQueryBuilder('n')
+            .leftJoinAndSelect('n.nftID', 'nftInfo')
+            // .leftJoinAndSelect('n.nftID','nftInfo')
+            // .select("nftInfo.*")
+            // .addSelect("n.id",'n_id')
+            // .addSelect("n.price",'price')
+            // .addSelect("n.isTrending",'isTrending')
+            // .addSelect("n.isList",'isList')
+            .select([
+                'n.id',
+                'n.price',
+                'n.isTrending',
+                'n.isList',
+                "nftInfo.nftName",
+                "nftInfo.image"
+            ])
+            // .select([
+            //     'nftInfo.id AS nftId',
+            //     'nftInfo.nftName AS name',
+            //     'nftInfo.image AS image',
+            //     'nftInfo.description AS description',
+            //     'n.price AS price',
+            //     'n.isTrending',
+            //     'n.isList',
+            //     'n.id'
+            //   ])
+            // .select([
+            //     'nftInfo.id',
+            //     'nftInfo.nftName',
+            //     'nftInfo.image',
+            //     'nftInfo.description',
+            //     'n.price',
+            //     'n.isTrending',
+            //     'n.isList'
+            //   ])
+            // .select([
+            //     'n.id',
+            //     'n.price',
+            //     'n.isTrending',
+            //     'n.isList',
+            //     'nftInfo.id AS nftId',
+            //     'nftInfo.nftName',
+            //     'nftInfo.image',
+            //     'nftInfo.description'
+            //   ])
+            .where("nftInfo.is_delete = 0")
+            .andWhere("n.is_delete = 0")
+            .andWhere("n.isList = 1");
+
+        if(search){
+            queryBuilderNftByUser.andWhere("nftInfo.nftName LIKE :search", { search: `%${search}%` });
+        }
+        if(isTrending){
+            queryBuilderNftByUser.andWhere("n.isTrending = 1");
+        }
+        const totalRecord = await queryBuilderNftByUser
+        .getCount();
+        console.log(totalRecord);
+
+        const nftListedEntities = await queryBuilderNftByUser
+        .orderBy("price",order)
+        .skip((pageIndex - 1) * pageSize)
+        .take(pageSize)
+        .getMany(); //getRawMany 
+       
+        let res = []; 
+
+       
+        return nftListedEntities;
+                                     
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
+const addTransaction = async (actionName:number,transaction:string,userID:number)=>{
+    const transactionRepository = await connectionManager.getRepository(TransactionUser);
+    const transactionInfo = {
+        
+    }
+
+}
+export {addNewNft, listNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser}

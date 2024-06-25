@@ -144,6 +144,7 @@ app.get('/api/account/login', async (req, res) => {
  *        - attribute
  *        - mintAddress
  *        - tokenAccount
+ *        - transaction
  *      properties:
  *        nftName:
  *          type: string
@@ -166,7 +167,8 @@ app.get('/api/account/login', async (req, res) => {
  *          type: string
  *        tokenAccount:
  *          type: string
- * 
+ *        transaction:
+ *          type: string
  */
 /**
  * @openapi
@@ -252,6 +254,125 @@ app.post('/api/nft/create-nft', async (req, res) => {
   } else {
     res.status(400).json({ success: false, message: 'Address is required' })
   }
+})
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    list-nft:
+ *      type: object
+ *      required:
+ *        - nftID
+ *        - price
+ *        - isList
+ *        - isTrending
+ *        - transaction
+ *      properties:
+ *        nftID:
+ *          type: number
+ *        price:
+ *          type: number
+ *        isList:
+ *          type: boolean
+ *          default: true 
+ *        isTrending:
+ *          type: boolean
+ *          default: false 
+ *        transaction:
+ *          type: string
+ * 
+ */
+/**
+ * @openapi
+ * /api/nft/list-nft:
+ *   post:
+ *     tags:
+ *     - nftApi
+ *     summary: List Nft to market
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Enter userId.
+ *       - in: query
+ *         name: listAction
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *         description: Enter action.
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *              $ref: '#/components/schemas/list-nft'
+ *     responses:
+ *       200:
+ *         description: Successful, includes the JSON format from the body of the response (each API may differ)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: true
+ *                  message:
+ *                     type: string
+ *                     default: Wrong 
+ *       400:
+ *         description: The parameters used for the API are incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Wrong 
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Server Error
+ */
+app.post('/api/nft/list-nft', async (req, res) => {
+  const data = req.body;
+  const listAction = req.query.listAction === 'true' ? true : false;
+  let userID = Number(req.query.userId);
+  if (userID) {
+    const result = await nftService.listNftToMarket(data,userID,listAction);
+    if(result.success){
+      res.status(200).json({ 
+        success: true, 
+        message: result.message,
+      })
+    }else{
+      res.status(500).json({ 
+        success: false, 
+        message: result.message,
+      })
+    }
+  }else{
+    res.status(400).json({ success: false, message: 'Address is required' })
+  }
+
+  
+
 })
 
 /**

@@ -20,3 +20,14 @@ export interface GenericNftResponse extends NftInfoModel{
   isTrending?:boolean;
   isList?:boolean;
 }
+
+export interface NftListModel{
+ nftID:number;
+ price:number;
+ isList?:boolean;
+ isTrending?:boolean;
+}
+export interface TransactionModel{
+  txID:string;
+  acctionType:number;
+}

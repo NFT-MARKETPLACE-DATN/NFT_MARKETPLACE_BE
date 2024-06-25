@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
-@Entity('acction_Type')
+import { Entity, PrimaryGeneratedColumn, Column,OneToMany } from 'typeorm';
+import { TransactionUser } from './transactionUser.entity';
+@Entity('acction_type')
 export class ActionType {
     @PrimaryGeneratedColumn()
     id: number;
@@ -11,4 +11,6 @@ export class ActionType {
         nullable: true,
       })
     name: string;
+    @OneToMany(() => TransactionUser, (TransactionUser) => TransactionUser.acctionType)
+    transactionUser: TransactionUser[];
 }

@@ -10,7 +10,6 @@ const checkUser = async (userAddress :string) : Promise<UserInfoModel|null>=>{
     try {
         const userRepository = ormconfig.getRepository(User);
         const userInfo = await userRepository.findOneBy({ address:userAddress  });
-        console.log(userInfo);
         
         return userInfo;
 
