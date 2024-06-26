@@ -4,13 +4,18 @@ import { BaseResponse,GenericBaseResponse } from "models/base.response";
 
 const createNft = async (userID:number,data:any):Promise<BaseResponse> =>{
    const result =  await nftRepository.addNewNft(userID,data);
+   if(result.success){
+    await nftRepository.addTransaction(1,data.transaction,userID);
+   }
    return result;
   
 }
-const listNftToMarket = async(data:any,userID:Number,listAction:boolean):Promise<BaseResponse>=>{
+const listNftToMarket = async(data:any,userID:number,listAction:boolean):Promise<BaseResponse>=>{
    const result =  await nftRepository.listNftToMarket(data);
-   console.log(listAction);
-   
+//    console.log(listAction);
+   if(result.success && listAction){
+        await nftRepository.addTransaction(2,data.transaction,userID);
+   }
    return result;
 }
 

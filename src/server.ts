@@ -284,7 +284,7 @@ app.post('/api/nft/create-nft', async (req, res) => {
  */
 /**
  * @openapi
- * /api/nft/list-nft:
+ * /api/nft/list-nft-market:
  *   post:
  *     tags:
  *     - nftApi
@@ -350,7 +350,7 @@ app.post('/api/nft/create-nft', async (req, res) => {
  *                    type: string
  *                    default: Server Error
  */
-app.post('/api/nft/list-nft', async (req, res) => {
+app.post('/api/nft/list-nft-market', async (req, res) => {
   const data = req.body;
   const listAction = req.query.listAction === 'true' ? true : false;
   let userID = Number(req.query.userId);
@@ -472,7 +472,7 @@ app.get('/api/nft/get-nft-by-id', async (req, res) => {
  *           type: number
  *         is_delete:
  *           type: boolean
- *         nftID:
+ *         nftInfo:
  *           $ref: '#/components/schemas/NFT'
  */
 /**
@@ -481,7 +481,7 @@ app.get('/api/nft/get-nft-by-id', async (req, res) => {
  *   get:
  *     tags:
  *     - nftApi
- *     summary: Used for login.
+ *     summary: Get NFT listed in market.
  *     description: Returns a simple status message to indicate that the service is running.
  *     parameters:
  *       - in: query
@@ -513,7 +513,7 @@ app.get('/api/nft/get-nft-by-id', async (req, res) => {
  *         schema:
  *           type: boolean
  *           default: false
- *         description: List NFT by trending
+ *         description: List NFT in market by trending
  *     responses:
  *       200:
  *         description: A list of NFTs
@@ -567,6 +567,123 @@ app.get('/api/nft/get-nft-listed', async (req, res) => {
   const isTrending = req.query.isTrending === 'true' ? true : false;
   
   const result = await nftService.getNftListed(pageIndex,pageSize,order,search,isTrending)
+  // console.log(result);
+  
+  res.status(200).json({ 
+    success: true, 
+    message:"dsads",
+    data : result //JSON.parse(result)
+  })
+})
+
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    action-transaction:
+ *      type: object
+ *      required:
+ *        - txID
+ *        - action_type
+ *      properties:
+ *        txID:
+ *          type: string
+ *        action_type:
+ *          type: number
+ * 
+ */
+/**
+ * @openapi
+ * /api/nft/get-transaction:
+ *   get:
+ *     tags:
+ *     - nftApi
+ *     summary: Get Transaction By User.
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Enter userId.
+ *       - in: query
+ *         name: pageIndex
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Enter page index.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Enter page size.
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: The search keyword
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: ["ASC","DESC"]
+ *           default: "DESC"
+ *         description: The order direction
+ *     responses:
+ *       200:
+ *         description: A list of NFTs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/action-transaction'
+ *                 total:
+ *                   type: integer
+ *                 pageIndex:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *       400:
+ *         description: The parameters used for the API are incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Wrong username or password
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Server Error
+ */
+app.get('/api/nft/get-transaction', async (req, res) => {
+  const pageIndex = parseInt(req.query.pageIndex as string) || 1;
+  const pageSize = parseInt(req.query.pageSize as string) || 10;
+  const search = (req.query.search as string) || '';
+  const order = (req.query.order as string) === 'ASC' ? 'ASC' : 'DESC';
+  const userID = Number(req.query.userId);
+  
+  const result = await userService.getTransactionUser(userID,pageIndex,pageSize,order,search)
   // console.log(result);
   
   res.status(200).json({ 

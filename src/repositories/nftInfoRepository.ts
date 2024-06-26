@@ -5,7 +5,7 @@ import { NftInfoModel,GenericNftResponse, NftListModel } from "models/nftInfo.mo
 import { Nft } from "../entities/nfts.entity";
 import {ListedNFT } from "../entities/listedNFT.entity";
 import { User } from "../entities/users.entity";
-import { TransactionUser } from "entities/transactionUser.entity";
+import { TransfersUser } from "entities/transfersUser.entity";
 const connectionManager = ormconfig.manager;
 
 const addNewNft = async (userID:number,data:NftInfoModel):Promise<BaseResponse> =>{
@@ -129,19 +129,20 @@ const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC
             .createQueryBuilder('n')
             .leftJoinAndSelect('n.nftID', 'nftInfo')
             // .leftJoinAndSelect('n.nftID','nftInfo')
-            // .select("nftInfo.*")
-            // .addSelect("n.id",'n_id')
-            // .addSelect("n.price",'price')
-            // .addSelect("n.isTrending",'isTrending')
-            // .addSelect("n.isList",'isList')
-            .select([
-                'n.id',
-                'n.price',
-                'n.isTrending',
-                'n.isList',
-                "nftInfo.nftName",
-                "nftInfo.image"
-            ])
+            .select("n.id",'id')
+            .addSelect("n.price",'price')
+            .addSelect("n.isTrending",'isTrending')
+            .addSelect("n.isList",'isList')
+            .addSelect("nftInfo.image",'image')
+            .addSelect("nftInfo.nftName",'name')
+            // .select([
+            //     'n.id ',
+            //     'n.price',
+            //     'n.isTrending',
+            //     'n.isList',
+            //     "nftInfo.nftName",
+            //     "nftInfo.image"
+            // ])
             // .select([
             //     'nftInfo.id AS nftId',
             //     'nftInfo.nftName AS name',
@@ -191,10 +192,13 @@ const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC
         // skip = skip > 0 ? skip : 0;
         // queryBuilderNftListed.orderBy("price",order);
         const nftListedEntities = await queryBuilderNftListed
-        .orderBy("price",order)
-        .skip((pageIndex - 1) * pageSize)
-        .take(pageSize)
-        .getMany(); //getRawMany 
+        .orderBy("n.price",order)
+        .offset((pageIndex - 1) * pageSize)
+        .limit(pageSize)
+        // .skip((pageIndex - 1) * pageSize)
+        // .take(pageSize)
+        .getRawMany(); //getMany 
+        
        console.log("đá",nftListedEntities);
        
         // const paginatedEntities = nftListedEntities.slice(skip, skip + pageSize);
@@ -221,7 +225,11 @@ const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC
         //     .andWhere("n.is_delete = 0")
         //     .getCount();
         let res = []; 
+        // nftListedEntities.forEach((record) =>{
 
+        // })
+    //     const { id, price, isList, nftID } = nftListedEntities[0];
+    //    console.log(nftID);
        
         return nftListedEntities;
                                      
@@ -263,18 +271,12 @@ const getNftByID = async (nftID:number):Promise<GenericNftResponse|null> =>{
     
 }
 
-const getManyNftByUser =async (pageIndex: number, pageSize: number,order?:"DESC"|"ASC", search?:string,isTrending?:boolean): Promise<any> =>{
+const getManyNftByUser =async (userID:number, pageIndex: number, pageSize: number, order?:"DESC"|"ASC", search?:string,isListed?:boolean): Promise<any> =>{
     try {
         const queryBuilderNftByUser = ormconfig
             .getRepository(Nft)
             .createQueryBuilder('n')
             .leftJoinAndSelect('n.nftID', 'nftInfo')
-            // .leftJoinAndSelect('n.nftID','nftInfo')
-            // .select("nftInfo.*")
-            // .addSelect("n.id",'n_id')
-            // .addSelect("n.price",'price')
-            // .addSelect("n.isTrending",'isTrending')
-            // .addSelect("n.isList",'isList')
             .select([
                 'n.id',
                 'n.price',
@@ -283,35 +285,6 @@ const getManyNftByUser =async (pageIndex: number, pageSize: number,order?:"DESC"
                 "nftInfo.nftName",
                 "nftInfo.image"
             ])
-            // .select([
-            //     'nftInfo.id AS nftId',
-            //     'nftInfo.nftName AS name',
-            //     'nftInfo.image AS image',
-            //     'nftInfo.description AS description',
-            //     'n.price AS price',
-            //     'n.isTrending',
-            //     'n.isList',
-            //     'n.id'
-            //   ])
-            // .select([
-            //     'nftInfo.id',
-            //     'nftInfo.nftName',
-            //     'nftInfo.image',
-            //     'nftInfo.description',
-            //     'n.price',
-            //     'n.isTrending',
-            //     'n.isList'
-            //   ])
-            // .select([
-            //     'n.id',
-            //     'n.price',
-            //     'n.isTrending',
-            //     'n.isList',
-            //     'nftInfo.id AS nftId',
-            //     'nftInfo.nftName',
-            //     'nftInfo.image',
-            //     'nftInfo.description'
-            //   ])
             .where("nftInfo.is_delete = 0")
             .andWhere("n.is_delete = 0")
             .andWhere("n.isList = 1");
@@ -319,7 +292,7 @@ const getManyNftByUser =async (pageIndex: number, pageSize: number,order?:"DESC"
         if(search){
             queryBuilderNftByUser.andWhere("nftInfo.nftName LIKE :search", { search: `%${search}%` });
         }
-        if(isTrending){
+        if(isListed){
             queryBuilderNftByUser.andWhere("n.isTrending = 1");
         }
         const totalRecord = await queryBuilderNftByUser
@@ -343,11 +316,31 @@ const getManyNftByUser =async (pageIndex: number, pageSize: number,order?:"DESC"
     }
 }
 
-const addTransaction = async (actionName:number,transaction:string,userID:number)=>{
-    const transactionRepository = await connectionManager.getRepository(TransactionUser);
-    const transactionInfo = {
+const addTransaction = async (actionType:number,transaction:string,userID:number):Promise<BaseResponse>=>{
+    try {
+        const transactionRepository = await connectionManager.getRepository(TransfersUser);
+        const transactionInfo = new TransfersUser();
+        transactionInfo.userID = userID;
+        transactionInfo.txID = transaction;
+        transactionInfo.acctionType = actionType;
+        await transactionRepository.save(transactionInfo);
+        return {
+            success:true,
+            message:"Add transaction to database success",
+            message_code:200
+        }
+    } catch (error :any) {
+        console.log(error.message);
         
+        return {
+            success:false,
+            message:error.message,
+            message_code:400
+        }
     }
+}
+
+const transferNft = async() =>{
 
 }
 export {addNewNft, listNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser}

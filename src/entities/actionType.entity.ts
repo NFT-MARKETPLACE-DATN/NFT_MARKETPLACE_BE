@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column,OneToMany } from 'typeorm';
-import { TransactionUser } from './transactionUser.entity';
+import { TransfersUser } from './transfersUser.entity';
 @Entity('acction_type')
 export class ActionType {
     @PrimaryGeneratedColumn()
@@ -11,6 +11,6 @@ export class ActionType {
         nullable: true,
       })
     name: string;
-    @OneToMany(() => TransactionUser, (TransactionUser) => TransactionUser.acctionType)
-    transactionUser: TransactionUser[];
+    @OneToMany(() => TransfersUser, (TransfersUser) => TransfersUser.acctionType)
+    transactionUser: TransfersUser[];
 }

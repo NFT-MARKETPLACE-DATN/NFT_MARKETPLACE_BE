@@ -2,7 +2,7 @@ import * as userRepository from "../repositories/userInfoRepository";
 import { BaseResponse,GenericBaseResponse } from "models/base.response";
 import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.model";
 
-export const userLogin = async (address:string): Promise<GenericBaseResponse<UserInfoModel>>=>{
+ const userLogin = async (address:string): Promise<GenericBaseResponse<UserInfoModel>>=>{
     try {
        let checkUser = await userRepository.checkUser(address);
        let balanceSOL = null;
@@ -54,3 +54,13 @@ export const userLogin = async (address:string): Promise<GenericBaseResponse<Use
         };
     }
 }
+const getTransactionUser = async(userID:number,pageIndex:number,pageSize:number,order?:"DESC"|"ASC",search?:string) =>{
+    try {
+      const result = await userRepository.getManyTransaction(userID,pageIndex,pageSize,order,search);
+      return result;
+    } catch (error) {
+      console.log(error);
+      
+    }
+}
+export {userLogin, getTransactionUser}

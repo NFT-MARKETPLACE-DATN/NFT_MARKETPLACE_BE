@@ -5,6 +5,8 @@ import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.mod
 import { BaseResponse,GenericBaseResponse } from "models/base.response";
 import * as solanaWeb3 from "@solana/web3.js";
 import * as envConfig from "../env-config.json";
+import { TransfersUser } from "entities/transfersUser.entity";
+const connectionManager = ormconfig.manager;
 
 const checkUser = async (userAddress :string) : Promise<UserInfoModel|null>=>{
     try {
@@ -119,5 +121,45 @@ const balanceSOL = async (address:string ) =>{
     let nativeBalanceSOL = await web3.getBalance(userAddressPubkey);
     return nativeBalanceSOL;
 }
+const getManyTransaction =async (userID:number,pageIndex: number, pageSize: number, order?:"DESC"|"ASC", search?:string ) => {
+    try {
+        const transactionRepository = await connectionManager.getRepository(TransfersUser);
+        const queryBuilderTransactionByUser = ormconfig
+            .getRepository(TransfersUser)
+            .createQueryBuilder('t')
+            .leftJoinAndSelect('t.acctionType', 'at')
+            // .select([
+            //     'n.id',
+            //     'n.price',
+            //     'n.isTrending',
+            //     'n.isList',
+            //     "nftInfo.nftName",
+            //     "nftInfo.image"
+            // ])
+            .where("t.userID = :userID",{userID:userID})
+            .andWhere("t.is_delete = 0")
+            // .andWhere("n.isList = 1");
+            if(search){
+                queryBuilderTransactionByUser.andWhere("at.name LIKE :search", { search: `%${search}%` });
+            }
 
-export {checkUser,addNewUser,updateUserBalance,balanceSOL}
+            const totalRecord = await queryBuilderTransactionByUser
+            .getCount();
+            console.log(totalRecord);
+    
+            const transactionEntities = await queryBuilderTransactionByUser
+            .orderBy("t.created_date",order)
+            .skip((pageIndex - 1) * pageSize)
+            .take(pageSize)
+            .getMany(); //getRawMany 
+            console.log(transactionEntities);
+            
+            let res = []; 
+
+       
+            return transactionEntities;
+    } catch (error) {
+        
+    }
+}
+export {checkUser,addNewUser,updateUserBalance,balanceSOL,getManyTransaction}
