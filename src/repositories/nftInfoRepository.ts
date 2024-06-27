@@ -301,10 +301,12 @@ const getManyNftByUser =async (userID:number, pageIndex: number, pageSize: numbe
 
         const nftListedEntities = await queryBuilderNftByUser
         .orderBy("price",order)
-        .skip((pageIndex - 1) * pageSize)
-        .take(pageSize)
-        .getMany(); //getRawMany 
-       
+        // .skip((pageIndex - 1) * pageSize)
+        // .take(pageSize)
+        // .getMany(); //getRawMany 
+        .offset((pageIndex - 1) * pageSize)
+        .limit(pageSize)
+        .getRawMany(); 
         let res = []; 
 
        
@@ -340,7 +342,13 @@ const addTransaction = async (actionType:number,transaction:string,userID:number
     }
 }
 
-const transferNft = async() =>{
+const transferNft = async(userID:number,nftID:number,) =>{
+    const transactionRepository = await connectionManager.getRepository(TransfersUser);
+    const userRepository = connectionManager.getRepository(User);
+    const userInfo = await userRepository.findOneBy({ id:userID  });
+    const nft = await connectionManager.getRepository(Nft)
+                .createQueryBuilder('nft');
+
 
 }
 export {addNewNft, listNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser}

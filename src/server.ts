@@ -28,7 +28,11 @@ app.listen(PORT, async () => {
  *               example: "Ok"
  */
 app.get('/api/health-check', async (req, res) => {
-  res.status(200).json('Oksádfasdfssssssss')
+  res.status(200).json({
+    success: true, 
+    message: "Oke",
+    data:null 
+  })
 })
 
 /**
@@ -691,4 +695,87 @@ app.get('/api/nft/get-transaction', async (req, res) => {
     message:"dsads",
     data : result //JSON.parse(result)
   })
+})
+
+/**
+ * @openapi
+ * /api/nft/transfer-nft:
+ *   get:
+ *     tags:
+ *     - nftApi
+ *     summary: Transfer NFT 
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Enter userId.
+ *       - in: query
+ *         name: nftId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Enter nftId.
+ *     responses:
+ *       200:
+ *         description: Successful, includes the JSON format from the body of the response (each API may differ)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: true
+ *       400:
+ *         description: The parameters used for the API are incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Wrong 
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Server Error
+ */
+app.get('/api/nft/transfer-nft', async (req, res) => {
+  let nftID = Number(req.query.nftId);
+  const userID = Number(req.query.userId);
+  if (nftID || userID) {
+    // const result = await nftService.getNftByID(nftID);
+    // if(result.success){
+    //   res.status(200).json({ 
+    //     success: true, 
+    //     message: result.message,
+    //     data : result.data
+    //   })
+    // }else{
+    //   res.status(500).json({ 
+    //     success: false, 
+    //     message: result.message,
+    //     data : null
+    //   })
+    // }
+
+  } else {
+    res.status(400).json({ success: false, message: 'Address and NFT is required' })
+  }
 })

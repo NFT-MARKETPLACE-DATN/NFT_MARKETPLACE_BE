@@ -58,5 +58,8 @@ const getNftListed = async (pageIndex:number,pageSize:number,order?:"DESC"|"ASC"
     //     }
     // }
     // return result;
+};
+const transferNft = async (userID:number,nftID:number)=>{
+    
 }
 export {createNft,listNftToMarket,getNftByID,getNftListed}

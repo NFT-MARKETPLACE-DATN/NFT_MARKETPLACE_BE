@@ -32,7 +32,7 @@ import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.mod
         modified_date: checkUser.modified_date,
         username: checkUser.username,
         address: checkUser.address,
-        balance: balanceSOL ? balanceSOL : checkUser.balance,
+        balance: balanceSOL ? (balanceSOL/Math.pow(10, 9)) : (Number(checkUser.balance)/Math.pow(10, 9)),
         image: checkUser.image,
         background: checkUser.background,
         roleID: checkUser.roleID
