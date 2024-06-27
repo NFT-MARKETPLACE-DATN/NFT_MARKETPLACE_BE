@@ -345,10 +345,11 @@ const addTransaction = async (actionType:number,transaction:string,userID:number
 const transferNft = async(userID:number,nftID:number,) =>{
     const transactionRepository = await connectionManager.getRepository(TransfersUser);
     const userRepository = connectionManager.getRepository(User);
-    const userInfo = await userRepository.findOneBy({ id:userID  });
+    const userInfo = await userRepository.findOneBy({id:userID});
     const nft = await connectionManager.getRepository(Nft)
                 .createQueryBuilder('nft');
+console.log(userInfo?.address);
 
 
 }
-export {addNewNft, listNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser}
+export {addNewNft, listNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser,transferNft}

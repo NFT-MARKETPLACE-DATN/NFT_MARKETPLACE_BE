@@ -760,13 +760,14 @@ app.get('/api/nft/transfer-nft', async (req, res) => {
   let nftID = Number(req.query.nftId);
   const userID = Number(req.query.userId);
   if (nftID || userID) {
-    // const result = await nftService.getNftByID(nftID);
+
+    const result = await nftService.transferNft(userID,nftID);
     // if(result.success){
-    //   res.status(200).json({ 
-    //     success: true, 
-    //     message: result.message,
-    //     data : result.data
-    //   })
+      res.status(200).json({ 
+        success: true, 
+        // message: result.message,
+        // data : result.data
+      })
     // }else{
     //   res.status(500).json({ 
     //     success: false, 
