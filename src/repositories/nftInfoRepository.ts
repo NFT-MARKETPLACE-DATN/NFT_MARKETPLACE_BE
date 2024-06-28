@@ -10,7 +10,7 @@ const connectionManager = ormconfig.manager;
 
 const addNewNft = async (userID:number,data:NftInfoModel):Promise<BaseResponse> =>{
     try {
-        
+        // thiếu phần check user
         const nftRepository = ormconfig.getRepository(Nft);
         // const userRepository = ormconfig.getRepository(User);
         // const userInfo = await userRepository.findOneBy({ id: userID });

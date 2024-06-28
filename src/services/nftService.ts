@@ -1,11 +1,15 @@
 import * as nftRepository from "../repositories/nftInfoRepository";
 import { NftInfoModel,GenericNftResponse } from "models/nftInfo.model";
 import { BaseResponse,GenericBaseResponse } from "models/base.response";
+import * as userRepository from "../repositories/userInfoRepository";
 
 const createNft = async (userID:number,data:any):Promise<BaseResponse> =>{
    const result =  await nftRepository.addNewNft(userID,data);
    if(result.success){
     await nftRepository.addTransaction(1,data.transaction,userID);
+    const a = await userRepository.updateUserBalance(userID);
+    console.log(a);
+    
    }
    return result;
   

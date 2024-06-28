@@ -17,13 +17,13 @@ import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.mod
             }
         }
        }else{
-          balanceSOL = await userRepository.balanceSOL(address);
-          // console.log(balanceSOL);
-          if(checkUser.balance == balanceSOL) console.log("Balance not change");
-          else{
-              const updateBalance = await userRepository.updateUserBalance(address,balanceSOL);
-              console.log(updateBalance);
-          }
+          // balanceSOL = await userRepository.balanceSOL(address);
+          // // console.log(balanceSOL);
+          // if(checkUser.balance == balanceSOL) console.log("Balance not change");
+          // else{
+              balanceSOL = await userRepository.updateUserBalance(Number(checkUser.id));
+              console.log(balanceSOL);
+          // }
        }
        const user ={
         id: checkUser.id,
@@ -32,7 +32,7 @@ import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.mod
         modified_date: checkUser.modified_date,
         username: checkUser.username,
         address: checkUser.address,
-        balance: balanceSOL ? (balanceSOL/Math.pow(10, 9)) : (Number(checkUser.balance)/Math.pow(10, 9)),
+        balance: balanceSOL?.balance ? (balanceSOL.balance/Math.pow(10, 9)) : (Number(checkUser.balance)/Math.pow(10, 9)),
         image: checkUser.image,
         background: checkUser.background,
         roleID: checkUser.roleID

@@ -601,7 +601,7 @@ app.get('/api/nft/get-nft-listed', async (req, res) => {
  * /api/nft/get-transaction:
  *   get:
  *     tags:
- *     - nftApi
+ *     - account
  *     summary: Get Transaction By User.
  *     description: Returns a simple status message to indicate that the service is running.
  *     parameters:

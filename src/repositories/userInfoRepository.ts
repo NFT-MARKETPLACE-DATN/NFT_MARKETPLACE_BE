@@ -2,7 +2,7 @@ import { ormconfig } from "../ormconfig";
 import logger from "../logger/winston";
 import { User } from "../entities/users.entity";
 import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.model";
-import { BaseResponse,GenericBaseResponse } from "models/base.response";
+import { BaseResponse,GenericBaseResponse,UserBalance } from "models/base.response";
 import * as solanaWeb3 from "@solana/web3.js";
 import * as envConfig from "../env-config.json";
 import { TransfersUser } from "entities/transfersUser.entity";
@@ -52,43 +52,56 @@ const addNewUser = async(userAddress :string): Promise<UserInfoModel|null> =>{
     }
 
 }
-const updateUserBalance = async(userAddress :string,balance:number): Promise<BaseResponse> =>{
+const updateUserBalance = async(userID :number): Promise<UserBalance> =>{
     try {
         const userRepository = ormconfig.getRepository(User);
-        const userInfo = await userRepository.findOneBy({ address: userAddress });
-        console.log(userInfo);
+        const userInfo = await userRepository.findOneBy({ id: userID });
+        // console.log(userInfo);
         
         if (userInfo == undefined || userInfo == null) {
             return {
                 success: false,
                 message: "User record is not found",
-                message_code: 400
+                message_code: 400,
+                balance:null
             };
         }
-        await userRepository.update({ address: userAddress }, {
-            balance : balance
-        });
-
-        return {
-            success: true,
-            message: "Update balance user to database",
-            message_code: 200
-        };
+        const balance = await balanceSOL(userInfo.address);
+        if(balance == userInfo.balance ){
+            return {
+                success: true,
+                message: "Balance User not change",
+                message_code: 200,
+                balance:balance,
+            }; 
+        }else{
+            await userRepository.update({ id: userID }, {
+                balance : balance
+            });
+    
+            return {
+                success: true,
+                message: "Update balance user to database",
+                message_code: 200,
+                balance:balance,
+            };
+        }
+        
     } catch (error) {
         console.log(error);
-        
         return {
             success: false,
             message: "Faield to save NFT info to database",
-            message_code: 400
+            message_code: 400,
+            balance:null
         };
     }
 
 }
-const updateUserBackground = async(userAddress :string, background:string): Promise<BaseResponse> =>{
+const updateUserBackground = async(userID :number, background:string): Promise<BaseResponse> =>{
     try {
         const userRepository = ormconfig.getRepository(User);
-        const userInfo = await userRepository.findOneBy({ address: userAddress });
+        const userInfo = await userRepository.findOneBy({ id: userID });
         if (userInfo == undefined || userInfo == null) {
             return {
                 success: false,
@@ -96,13 +109,13 @@ const updateUserBackground = async(userAddress :string, background:string): Prom
                 message_code: 400
             };
         }
-        await userRepository.update(userAddress, {
+        await userRepository.update({ id: userID }, {
             background : background
         });
 
         return {
             success: true,
-            message: "Update balance user to database",
+            message: "Update background user to database",
             message_code: 200
         };
     } catch (error) {
