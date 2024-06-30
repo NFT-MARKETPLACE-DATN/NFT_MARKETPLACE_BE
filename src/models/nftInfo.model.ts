@@ -26,6 +26,7 @@ export interface NftListModel{
  price:number;
  isList?:boolean;
  isTrending?:boolean;
+ transaction?:string;
 }
 export interface TransactionModel{
   txID:string;

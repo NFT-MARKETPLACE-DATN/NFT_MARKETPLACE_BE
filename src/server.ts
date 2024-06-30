@@ -133,6 +133,92 @@ app.get('/api/account/login', async (req, res) => {
     res.status(400).json({ success: false, message: 'Address is required' })
   }
 })
+/**
+ * @openapi
+ * /api/account/update-background:
+ *   post:
+ *     tags:
+ *     - account
+ *     summary: Update user background.
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Enter userId.
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               background: 
+ *                 type: string
+ *                 description:  User background
+ *     responses:
+ *       200:
+ *         description: Successful, includes the JSON format from the body of the response (each API may differ)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: true
+ *       400:
+ *         description: The parameters used for the API are incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Wrong username or password
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Server Error
+ */
+app.post('/api/account/update-background', async (req, res) => {
+  let userID = Number(req.query.userId);
+  let background = req.body.background?.toString();
+  if (userID && background) {
+    const result = await userService.userUpdateBackground(userID,background);
+    if(result?.success){
+      res.status(200).json({ 
+        success: true, 
+        message: 'Update Background successful',
+        data:result.data
+      })
+    }else{
+      res.status(500).json({ 
+        success: false, 
+        message: result.message,
+        data:null 
+      })
+    }
+
+  } else {
+    res.status(400).json({ success: false, message: 'Address is required' })
+  }
+})
 
 /**
  * @openapi
@@ -303,9 +389,10 @@ app.post('/api/nft/create-nft', async (req, res) => {
  *         description: Enter userId.
  *       - in: query
  *         name: listAction
- *         required: false
+ *         required: true
  *         schema:
  *           type: boolean
+ *           default: true
  *         description: Enter action.
  *     requestBody:
  *      required: true
@@ -572,12 +659,135 @@ app.get('/api/nft/get-nft-listed', async (req, res) => {
   
   const result = await nftService.getNftListed(pageIndex,pageSize,order,search,isTrending)
   // console.log(result);
+  if(result){
+    res.status(200).json({ 
+      success: true, 
+      message:"dsads",
+      data : result //JSON.parse(result)
+    })
+  }else{
+    res.status(400).json({ success: false, message: 'Get Nft fail' })
+  }
+
+})
+
+/**
+ * @openapi
+ * /api/nft/get-nft-by-user:
+ *   get:
+ *     tags:
+ *     - nftApi
+ *     summary: Get NFT by user.
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Enter userId.
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: The search keyword
+ *       - in: query
+ *         name: pageIndex
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Enter page index.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Enter page size.
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: ["ASC","DESC"]
+ *           default: "DESC"
+ *         description: The order direction
+ *       - in: query
+ *         name: isListed
+ *         schema:
+ *           type: boolean
+ *           default: false
+ *         description: Nft listed in ArtChain market
+ *       - in: query
+ *         name: isCreated
+ *         schema:
+ *           type: boolean
+ *           default: false
+ *         description: Nft created by user
+ *     responses:
+ *       200:
+ *         description: A list of NFTs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ListedNFT'
+ *                 total:
+ *                   type: integer
+ *                 pageIndex:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *       400:
+ *         description: The parameters used for the API are incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Wrong username or password
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Server Error
+ */
+app.get('/api/nft/get-nft-by-user', async (req, res) => {
+  const userID = Number(req.query.userId);
+  const pageIndex = parseInt(req.query.pageIndex as string) || 1;
+  const pageSize = parseInt(req.query.pageSize as string) || 10;
+  const search = (req.query.search as string) || '';
+  const order = (req.query.order as string) === 'ASC' ? 'ASC' : 'DESC';
+  const isListed = req.query.isListed === 'true' ? true : false;
+  const isCreated = req.query.isCreated === 'true' ? true : false;
+  if(userID){
+    const result = await nftService.getNftByUser(userID,pageIndex,pageSize,order,search,isListed,isCreated)
+    res.status(200).json({ 
+      success: true, 
+      message:"dsads",
+      data : result //JSON.parse(result)
+    })
+  }else{
+    res.status(400).json({ success: false, message: 'Address is required' })
+  }
+  // console.log(result);
   
-  res.status(200).json({ 
-    success: true, 
-    message:"dsads",
-    data : result //JSON.parse(result)
-  })
+
 })
 
 /**
@@ -588,13 +798,21 @@ app.get('/api/nft/get-nft-listed', async (req, res) => {
  *      type: object
  *      required:
  *        - txID
- *        - action_type
+ *        - actionName
+ *        - created
+ *        - nftName
+ *        - nftImage
  *      properties:
  *        txID:
  *          type: string
- *        action_type:
+ *        actionName:
  *          type: number
- * 
+ *        created:
+ *          type: string
+ *        nftName:
+ *          type: string
+ *        nftImage:
+ *          type: string
  */
 /**
  * @openapi
@@ -626,8 +844,8 @@ app.get('/api/nft/get-nft-listed', async (req, res) => {
  *       - in: query
  *         name: search
  *         schema:
- *           type: string
- *         description: The search keyword
+ *           type: number
+ *         description: Type action
  *       - in: query
  *         name: order
  *         schema:
@@ -683,11 +901,11 @@ app.get('/api/nft/get-nft-listed', async (req, res) => {
 app.get('/api/nft/get-transaction', async (req, res) => {
   const pageIndex = parseInt(req.query.pageIndex as string) || 1;
   const pageSize = parseInt(req.query.pageSize as string) || 10;
-  const search = (req.query.search as string) || '';
+  const filter = Number(req.query.search);
   const order = (req.query.order as string) === 'ASC' ? 'ASC' : 'DESC';
   const userID = Number(req.query.userId);
   
-  const result = await userService.getTransactionUser(userID,pageIndex,pageSize,order,search)
+  const result = await userService.getTransactionUser(userID,pageIndex,pageSize,order,filter)
   // console.log(result);
   
   res.status(200).json({ 

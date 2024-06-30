@@ -98,32 +98,25 @@ const updateUserBalance = async(userID :number): Promise<UserBalance> =>{
     }
 
 }
-const updateUserBackground = async(userID :number, background:string): Promise<BaseResponse> =>{
+const updateUserBackground = async(userID :number, background:string): Promise<UserInfoModel | null> =>{
     try {
         const userRepository = ormconfig.getRepository(User);
         const userInfo = await userRepository.findOneBy({ id: userID });
         if (userInfo == undefined || userInfo == null) {
-            return {
-                success: false,
-                message: "User record is not found",
-                message_code: 400
-            };
+            return null;
         }
+       if(background == userInfo.background){
+        return userInfo;
+       }else{
         await userRepository.update({ id: userID }, {
             background : background
         });
+        const updatedUser =await userRepository.findOneBy({ id: userID });
+        return updatedUser;
+       }
 
-        return {
-            success: true,
-            message: "Update background user to database",
-            message_code: 200
-        };
-    } catch (error) {
-        return {
-            success: false,
-            message: "Faield to save NFT info to database",
-            message_code: 400
-        };
+    } catch (error:any) {
+        return null;
     }
 
 }
@@ -134,45 +127,57 @@ const balanceSOL = async (address:string ) =>{
     let nativeBalanceSOL = await web3.getBalance(userAddressPubkey);
     return nativeBalanceSOL;
 }
-const getManyTransaction =async (userID:number,pageIndex: number, pageSize: number, order?:"DESC"|"ASC", search?:string ) => {
+const getManyTransaction =async (userID:number,pageIndex: number, pageSize: number, order?:"DESC"|"ASC", search?:number ) => {
     try {
         const transactionRepository = await connectionManager.getRepository(TransfersUser);
         const queryBuilderTransactionByUser = ormconfig
             .getRepository(TransfersUser)
             .createQueryBuilder('t')
             .leftJoinAndSelect('t.acctionType', 'at')
-            // .select([
-            //     'n.id',
-            //     'n.price',
-            //     'n.isTrending',
-            //     'n.isList',
-            //     "nftInfo.nftName",
-            //     "nftInfo.image"
-            // ])
+            .leftJoinAndSelect('t.nftID', 'n')
+            .select([
+                't.id as id',
+                't.created_date as created',
+                't.txID as txID',
+                'at.name as actionName',
+                "n.nftName as nftName",
+                "n.image as nftImage"
+            ])
             .where("t.userID = :userID",{userID:userID})
             .andWhere("t.is_delete = 0")
             // .andWhere("n.isList = 1");
-            if(search){
-                queryBuilderTransactionByUser.andWhere("at.name LIKE :search", { search: `%${search}%` });
+            if(search && search !== 0){
+                queryBuilderTransactionByUser.andWhere("at.id = :search", { search: `${search}` });
             }
 
             const totalRecord = await queryBuilderTransactionByUser
             .getCount();
-            console.log(totalRecord);
+            // console.log(totalRecord);
     
             const transactionEntities = await queryBuilderTransactionByUser
             .orderBy("t.created_date",order)
-            .skip((pageIndex - 1) * pageSize)
-            .take(pageSize)
-            .getMany(); //getRawMany 
-            console.log(transactionEntities);
+            .offset((pageIndex - 1) * pageSize)
+            .limit(pageSize)
+            .getRawMany(); //getRawMany 
+            // console.log(transactionEntities);
             
-            let res = []; 
-
-       
-            return transactionEntities;
-    } catch (error) {
-        
+            let res: { id: number; created: Date; txID:string; actionName:string; nftName:string; nftImage: string; }[] = []; 
+            transactionEntities.forEach((record) =>{
+                res.push({
+                    id:record.id,
+                    created:record.created,
+                    txID:record.txID,
+                    actionName:record.actionName,
+                    nftName:record.nftName,
+                    nftImage:record.nftImage
+                })
+            })
+            return {
+                records: res,
+                totalRecord: totalRecord
+            };
+    } catch (error:any) {
+        return error.message
     }
 }
-export {checkUser,addNewUser,updateUserBalance,balanceSOL,getManyTransaction}
+export {checkUser, addNewUser, updateUserBalance, balanceSOL, getManyTransaction, updateUserBackground}

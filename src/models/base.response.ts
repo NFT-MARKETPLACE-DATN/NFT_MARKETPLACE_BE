@@ -10,3 +10,6 @@ export class GenericBaseResponse<T> extends BaseResponse{
 export class UserBalance extends BaseResponse{
     balance:number | null;
 }
+export class NftAction extends BaseResponse{
+    nftID:number | null;
+}

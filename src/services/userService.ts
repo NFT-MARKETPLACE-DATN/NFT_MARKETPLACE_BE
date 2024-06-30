@@ -22,7 +22,7 @@ import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.mod
           // if(checkUser.balance == balanceSOL) console.log("Balance not change");
           // else{
               balanceSOL = await userRepository.updateUserBalance(Number(checkUser.id));
-              console.log(balanceSOL);
+              // console.log(balanceSOL);
           // }
        }
        const user ={
@@ -54,13 +54,46 @@ import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.mod
         };
     }
 }
-const getTransactionUser = async(userID:number,pageIndex:number,pageSize:number,order?:"DESC"|"ASC",search?:string) =>{
+const getTransactionUser = async(userID:number,pageIndex:number,pageSize:number,order?:"DESC"|"ASC",search?:number) =>{
     try {
       const result = await userRepository.getManyTransaction(userID,pageIndex,pageSize,order,search);
       return result;
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      
+      return error.message
     }
 }
-export {userLogin, getTransactionUser}
+const userUpdateBackground = async (userID :number, background:string):Promise<GenericBaseResponse<UserInfoModel>> =>{
+  const user = await userRepository.updateUserBackground(userID,background);
+  if(user){
+    const userInfo ={
+      id: user.id,
+      is_delete: false,
+      created_date: user.created_date,
+      modified_date: user.modified_date,
+      username: user.username,
+      address: user.address,
+      balance: (Number(user.balance)/Math.pow(10, 9)),
+      image: user.image,
+      background: user.background,
+      roleID: user.roleID
+     }
+     return {
+        success: true,
+        data: userInfo,
+        message:'Update user background success',
+        message_code:400
+     }
+  }else{
+    return {
+      success: false,
+      data: null,
+      message:'Update user background fail',
+      message_code:400
+   }
+  }
+  
+  // return user;
+
+}
+export {userLogin, getTransactionUser,userUpdateBackground}

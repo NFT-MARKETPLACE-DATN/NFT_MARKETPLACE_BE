@@ -1,8 +1,8 @@
 {
     "port": 3100,
     "solanaNetwork":{
-      "rpc": "https://solana-devnet.g.alchemy.com/v2/UZe8cyrmtLjH44EJ2mm8VZdo1ofTDCfA",
-      "test": "https://api.testnet.solana.com",
+      "rpc": "https://api.testnet.solana.com", 
+      "test": "https://solana-devnet.g.alchemy.com/v2/UZe8cyrmtLjH44EJ2mm8VZdo1ofTDCfA",
       "main": "https://rpc.ankr.com/solana_devnet",
       "gasLimit": 21000,
       "gasPrice": 10,

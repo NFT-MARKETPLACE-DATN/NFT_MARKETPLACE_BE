@@ -14,7 +14,7 @@ userID: User | Number;
     length: 255, 
     nullable: true,
   })
-  txID: string;
+  txID: string | null;
   @ManyToOne(() => ActionType, (ActionType) => ActionType.id , { eager: true })
   @JoinColumn({ name: 'action_type' }) // Tùy chỉnh tên cột khóa ngoại
   acctionType: ActionType | Number; 

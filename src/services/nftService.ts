@@ -5,8 +5,8 @@ import * as userRepository from "../repositories/userInfoRepository";
 
 const createNft = async (userID:number,data:any):Promise<BaseResponse> =>{
    const result =  await nftRepository.addNewNft(userID,data);
-   if(result.success){
-    await nftRepository.addTransaction(1,data.transaction,userID);
+   if(result.success && result.nftID){
+    await nftRepository.addTransaction(1,data.transaction,userID,result.nftID);
     const a = await userRepository.updateUserBalance(userID);
     console.log(a);
     
@@ -15,11 +15,14 @@ const createNft = async (userID:number,data:any):Promise<BaseResponse> =>{
   
 }
 const listNftToMarket = async(data:any,userID:number,listAction:boolean):Promise<BaseResponse>=>{
-   const result =  await nftRepository.listNftToMarket(data);
+   const result =  await nftRepository.listNftToMarket(data,userID,listAction);
 //    console.log(listAction);
-   if(result.success && listAction){
-        await nftRepository.addTransaction(2,data.transaction,userID);
-   }
+//    if(result.success && listAction){
+//         if(data.isList){
+//             await nftRepository.addTransaction(2,data.transaction,userID,data.nftID); 
+//         }
+       
+//    }
    return result;
 }
 
@@ -67,4 +70,9 @@ const transferNft = async (userID:number,nftID:number)=>{
     await nftRepository.transferNft(userID,nftID);
 
 }
-export {createNft,listNftToMarket,getNftByID,getNftListed,transferNft}
+const getNftByUser = async (userID:number, pageIndex: number, pageSize: number, order?:"DESC"|"ASC", search?:string,isListed?:boolean,isCreacted?:boolean)=>{
+    const result =  await nftRepository.getManyNftByUser(userID,pageIndex,pageSize,order,search,isListed,isCreacted);
+    return result;
+    
+}
+export {createNft, listNftToMarket, getNftByID, getNftListed, getNftByUser, transferNft}
