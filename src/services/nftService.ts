@@ -14,10 +14,10 @@ const createNft = async (userID:number,data:any):Promise<BaseResponse> =>{
    return result;
   
 }
-const listNftToMarket = async(data:any,userID:number,listAction:boolean):Promise<BaseResponse>=>{
-   const result =  await nftRepository.listNftToMarket(data,userID,listAction);
-//    console.log(listAction);
-//    if(result.success && listAction){
+const syncNftToMarket = async(data:any,userID:number,isAction:boolean):Promise<BaseResponse>=>{
+   const result =  await nftRepository.syncNftToMarket(data,userID,isAction);
+//    console.log(isAction);
+//    if(result.success && isAction){
 //         if(data.isList){
 //             await nftRepository.addTransaction(2,data.transaction,userID,data.nftID); 
 //         }
@@ -75,4 +75,4 @@ const getNftByUser = async (userID:number, pageIndex: number, pageSize: number, 
     return result;
     
 }
-export {createNft, listNftToMarket, getNftByID, getNftListed, getNftByUser, transferNft}
+export {createNft, syncNftToMarket, getNftByID, getNftListed, getNftByUser, transferNft}

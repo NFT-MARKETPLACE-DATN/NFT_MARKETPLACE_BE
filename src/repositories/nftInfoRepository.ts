@@ -54,7 +54,7 @@ const addNewNft = async (userID:number,data:NftInfoModel):Promise<NftAction> =>{
     }
     
 };
-const listNftToMarket = async (data:NftListModel,userID:number,listAction:boolean):Promise<BaseResponse> =>{
+const syncNftToMarket = async (data:NftListModel,userID:number,isAction:boolean):Promise<BaseResponse> =>{
     try {
         const nftListRepository = ormconfig.getRepository(ListedNFT);
         const nftRepository = ormconfig.getRepository(Nft);
@@ -75,39 +75,49 @@ const listNftToMarket = async (data:NftListModel,userID:number,listAction:boolea
                     await nftListRepository.update({nftID:data.nftID},{
                         isList:true,
                         price:data.price,
-                        isTrending:false
+                        isTrending:data.isTrending
                     });
-                    if(listAction){
+                    if(isAction){
                         const transaction = data?.transaction ? data.transaction : null;
                         await addTransaction(2,transaction,userID,data.nftID);  
                     }
  
                     return {
                         success:true,
-                        message:"List NFT success",
+                        message: !nft.isList ? "List NFT success" : "Change price success",
                         message_code:200
                     }
                 }else{
                     return {
-                        success:false,
-                        message:"price not change || NFT is listed",
+                        success:true,
+                        message:nft.price == data.price ? "Price not change" : " NFT is listed",
                         message_code:400
                     }
                 }
             }else{
-                await nftListRepository.update({nftID:data.nftID},{
-                    isList:false,
-                });
-                if(listAction){
-                    const transaction = data?.transaction ? data.transaction : null;
-                    await addTransaction(3,transaction,userID,data.nftID);
+                try {
+                    await nftListRepository.update({nftID:data.nftID},{
+                        isList:false,
+                    });
+                    if(isAction){
+                        const transaction = data?.transaction ? data.transaction : null;
+                        await addTransaction(3,transaction,userID,data.nftID);
+                    }
+                      
+                    return {
+                        success:true,
+                        message:"Unlisted NFT success",
+                        message_code:200
+                    }
+                } catch (error) {
+                    console.log(error);
+                    return {
+                        success:false,
+                        message:"Unlisted NFT fail",
+                        message_code:200
+                    }
                 }
-                  
-                return {
-                    success:true,
-                    message:"Unlisted NFT success",
-                    message_code:200
-                }
+                
             }
            
         }else{
@@ -118,7 +128,7 @@ const listNftToMarket = async (data:NftListModel,userID:number,listAction:boolea
                     ...data,
                 });
             await nftListRepository.save(nftInfo);
-            if(listAction){
+            if(isAction){
                 const transaction = data?.transaction ? data.transaction : null;
                 await addTransaction(2,transaction,userID,data.nftID);  
             }
@@ -398,4 +408,4 @@ console.log(userInfo?.address);
 
 
 }
-export {addNewNft, listNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser,transferNft}
+export {addNewNft, syncNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser,transferNft}

@@ -377,7 +377,7 @@ app.post('/api/nft/create-nft', async (req, res) => {
  */
 /**
  * @openapi
- * /api/nft/list-nft-market:
+ * /api/nft/sync-nft-market:
  *   post:
  *     tags:
  *     - nftApi
@@ -391,7 +391,7 @@ app.post('/api/nft/create-nft', async (req, res) => {
  *           type: number
  *         description: Enter userId.
  *       - in: query
- *         name: listAction
+ *         name: isAction
  *         required: true
  *         schema:
  *           type: boolean
@@ -444,12 +444,12 @@ app.post('/api/nft/create-nft', async (req, res) => {
  *                    type: string
  *                    default: Server Error
  */
-app.post('/api/nft/list-nft-market', async (req, res) => {
+app.post('/api/nft/sync-nft-market', async (req, res) => {
   const data = req.body;
-  const listAction = req.query.listAction === 'true' ? true : false;
+  const isAction = req.query.isAction === 'true' ? true : false;
   let userID = Number(req.query.userId);
   if (userID) {
-    const result = await nftService.listNftToMarket(data,userID,listAction);
+    const result = await nftService.syncNftToMarket(data,userID,isAction);
     if(result.success){
       res.status(200).json({ 
         success: true, 
