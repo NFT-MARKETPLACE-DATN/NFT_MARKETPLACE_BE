@@ -39,7 +39,7 @@ const getNftByID = async (nftID:number) :Promise<GenericBaseResponse<GenericNftR
         return {
             success: true,
             data: null,
-            message:'Get Nft Info fail',
+            message:'Record not found',
             message_code:400
         }
     }

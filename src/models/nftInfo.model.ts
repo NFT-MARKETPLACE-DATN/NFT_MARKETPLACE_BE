@@ -6,6 +6,7 @@ export interface NftInfoModel {
   attribute?: Attribute[];
   mintAddress: string;
   tokenAccount: string;
+  metadataUrl:string;
 }
 
 interface Attribute {

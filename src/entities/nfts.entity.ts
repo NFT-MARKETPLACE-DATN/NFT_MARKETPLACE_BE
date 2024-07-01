@@ -53,7 +53,13 @@ export class Nft extends DefaultEntity {
     nullable: false,
   })
   tokenAccount: string; //nft token account
-  
+  @Column({
+    name: "metadata_url", 
+    type: "varchar", 
+    length: 255, 
+    nullable: false,
+  })
+  metadataUrl: string;// nft mint address
   // @Column({ type: 'int',name: 'user_id'})
   // userID: number; // Đây là ID của RoleEntity
   // @Column({ type: 'int',name: 'user_created'})

@@ -17,7 +17,6 @@ const addNewNft = async (userID:number,data:NftInfoModel):Promise<NftAction> =>{
         // if (!userInfo) {
         //     throw new Error("User not found");
         // }
-        // console.log(data);
         const nftInfo = new Nft();
         Object.assign(nftInfo, {
             userID:userID,
@@ -252,7 +251,7 @@ const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC
     }
 }
 
-const getNftByID = async (nftID:number):Promise<GenericNftResponse|null> =>{
+const getNftByID = async (nftID:number):Promise<any|null> =>{
     try {
         // const nftRepository = ormconfig.getRepository(Nft);
         // const nftInfo = await nftRepository.findOneBy({ id:nftID  });
@@ -270,9 +269,25 @@ const getNftByID = async (nftID:number):Promise<GenericNftResponse|null> =>{
             .addSelect("nftListed.isList",'isList')
             .where('nft.id = :id', { id: nftID })
             .getRawOne();
-            console.log(nft);
-            
-            return nft;
+            // console.log(nft);
+        const record = {
+            id: nft.id,
+            price:nft.price > 0 ? (nft.price/Math.pow(10, 9)) : 0,
+            isList:nft.isList,
+            ownAddress:nft.ownAddress,
+            createdAddress:nft.createdAddress,
+            created_date:nft.created_date,
+            nftName:nft.nft_name,
+            symbol:nft.symbol,
+            image:nft.image,
+            description:nft.description,
+            attribute:JSON.parse(nft.attribute),
+            mint_address:nft.mint_address,
+            token_account:nft.token_account,
+            user_id:nft.user_id,
+            metadataUrl:nft.metadata_url
+        }    
+            return record;
         // const nftInfo = connectionManager.query('')
         ;
 
@@ -299,9 +314,8 @@ const getManyNftByUser =async (userID:number, pageIndex: number, pageSize: numbe
                 // "nftInfo.nftName",
                 // "nftInfo.image"
             ])
-            .where("nftInfo.is_delete = 0")
-            .andWhere("n.is_delete = 0")
-        
+            .where("n.is_delete = 0")
+            
         if(isCreacted){
             queryBuilderNftByUser.andWhere("n.userCreated = :creacted", { creacted: `${userID}` });
         }else{
@@ -312,7 +326,9 @@ const getManyNftByUser =async (userID:number, pageIndex: number, pageSize: numbe
             queryBuilderNftByUser.andWhere("LOWER(n.nftName) LIKE LOWER(:search)", { search: `%${search}%` });
         }
         if(isListed){
-            queryBuilderNftByUser.andWhere("nftInfo.isList = 1");
+            queryBuilderNftByUser
+            .andWhere("nftInfo.isList = 1")
+            .andWhere("nftInfo.is_delete = 0");
         }
         const totalRecord = await queryBuilderNftByUser
         .getCount();

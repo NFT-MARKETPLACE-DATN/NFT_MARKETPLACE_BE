@@ -235,6 +235,7 @@ app.post('/api/account/update-background', async (req, res) => {
  *        - mintAddress
  *        - tokenAccount
  *        - transaction
+ *        - metadataUrl
  *      properties:
  *        nftName:
  *          type: string
@@ -256,6 +257,8 @@ app.post('/api/account/update-background', async (req, res) => {
  *        mintAddress:
  *          type: string
  *        tokenAccount:
+ *          type: string
+ *        metadataUrl:
  *          type: string
  *        transaction:
  *          type: string
