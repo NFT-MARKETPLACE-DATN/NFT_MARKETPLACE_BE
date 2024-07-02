@@ -166,7 +166,8 @@ const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC
             .createQueryBuilder('n')
             .leftJoinAndSelect('n.nftID', 'nftInfo')
             // .leftJoinAndSelect('n.nftID','nftInfo')
-            .select("n.id",'id')
+            .select("nftInfo.id",'id')
+            // .addSelect("nftInfo.id",'nftID')
             .addSelect("n.price",'price')
             .addSelect("n.isTrending",'isTrending')
             .addSelect("n.isList",'isList')
@@ -237,11 +238,12 @@ const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC
         .getRawMany(); //getMany 
         
        
-        let res: { id: number; price: number; isList: boolean; name: string; image: string; }[] = []; 
+        let res: { id: number; price: number; isList: boolean; name: string; image: string; }[] = []; //nftID:number
         nftListedEntities.forEach((record) =>{
             res.push({
                 id:record.id,
                 price:record.price != 0 ? (record.price/Math.pow(10, 9)) : 0,
+                // nftID:record.nftID,
                 isList:record.isList,
                 name:record.name,
                 image:record.image
@@ -315,14 +317,14 @@ const getManyNftByUser =async (userID:number, pageIndex: number, pageSize: numbe
         const queryBuilderNftByUser = ormconfig
             .getRepository(Nft)
             .createQueryBuilder('n')
-            .leftJoinAndSelect('n.nftListed', 'nftInfo')
+            .leftJoinAndSelect('n.nftListed', 'nftListed')
             .select([
                 'n.id as id',
                 'n.nftName as nftName',
                 'n.image as image',
                 // 'n.isList',
-                // "nftInfo.nftName",
-                // "nftInfo.image"
+                // "nftListed.nftName",
+                // "nftListed.image"
             ])
             .where("n.is_delete = 0")
             
@@ -337,8 +339,8 @@ const getManyNftByUser =async (userID:number, pageIndex: number, pageSize: numbe
         }
         if(isListed){
             queryBuilderNftByUser
-            .andWhere("nftInfo.isList = 1")
-            .andWhere("nftInfo.is_delete = 0");
+            .andWhere("nftListed.isList = 1")
+            .andWhere("nftListed.is_delete = 0");
         }
         const totalRecord = await queryBuilderNftByUser
         .getCount();
