@@ -1,4 +1,4 @@
-import { RoleEntity } from "entities/role.entity";
+import { RoleEntity } from "../entities/role.entity";
 export interface UserInfoModel {
     id?: Number,
     is_delete?: boolean,

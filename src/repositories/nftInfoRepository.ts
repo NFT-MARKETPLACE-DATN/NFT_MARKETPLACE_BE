@@ -5,7 +5,7 @@ import { NftInfoModel,GenericNftResponse, NftListModel } from "models/nftInfo.mo
 import { Nft } from "../entities/nfts.entity";
 import {ListedNFT } from "../entities/listedNFT.entity";
 import { User } from "../entities/users.entity";
-import { TransfersUser } from "entities/transfersUser.entity";
+import { TransfersUser } from "../entities/transfersUser.entity";
 const connectionManager = ormconfig.manager;
 
 const addNewNft = async (userID:number,data:NftInfoModel):Promise<NftAction> =>{

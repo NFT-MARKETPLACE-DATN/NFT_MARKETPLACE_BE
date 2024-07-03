@@ -5,7 +5,7 @@ import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.mod
 import { BaseResponse,GenericBaseResponse,UserBalance } from "models/base.response";
 import * as solanaWeb3 from "@solana/web3.js";
 import * as envConfig from "../env-config.json";
-import { TransfersUser } from "entities/transfersUser.entity";
+import { TransfersUser } from "../entities/transfersUser.entity";
 const connectionManager = ormconfig.manager;
 
 const checkUser = async (userAddress :string) : Promise<UserInfoModel|null>=>{
