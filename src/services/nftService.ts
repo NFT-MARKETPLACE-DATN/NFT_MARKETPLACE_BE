@@ -75,4 +75,12 @@ const getNftByUser = async (userID:number, pageIndex: number, pageSize: number, 
     return result;
     
 }
-export {createNft, syncNftToMarket, getNftByID, getNftListed, getNftByUser, transferNft}
+const getNftsByAdmin = async (pageIndex: number, pageSize: number, search?:string,isList?:boolean) =>{
+    const result = nftRepository.getNftsByAdmin(pageIndex,pageSize,search,isList);
+    return result;
+}
+const updateIsTrendingNft = async(nftId:number, isTrending:number)=>{
+    const result = nftRepository.updateIsTrendingNft(nftId,isTrending);
+    return result;
+  }
+export {createNft, syncNftToMarket, getNftByID, getNftListed, getNftByUser, transferNft, getNftsByAdmin, updateIsTrendingNft}

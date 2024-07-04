@@ -96,4 +96,13 @@ const userUpdateBackground = async (userID :number, background:string):Promise<G
   // return user;
 
 }
-export {userLogin, getTransactionUser,userUpdateBackground}
+const getUserbyAdmin = async(pageIndex: number, pageSize: number, order?:"DESC"|"ASC", search?:string) =>{
+  const result = userRepository.getUserbyAdmin(pageIndex, pageSize, order, search);
+  return result
+}
+
+const updateRoleUser = async(userID:number, isRole:number)=>{
+  const result = userRepository.updateRoleUser(userID,isRole);
+  return result;
+}
+export {userLogin, getTransactionUser,userUpdateBackground, getUserbyAdmin, updateRoleUser}

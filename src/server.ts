@@ -1001,3 +1001,428 @@ app.get('/api/nft/transfer-nft', async (req, res) => {
     res.status(400).json({ success: false, message: 'Address and NFT is required' })
   }
 })
+
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    users:
+ *      type: object
+ *      required:
+ *        - address
+ *        - created
+ *        - balance
+ *        - isAdmin
+ *        - nftCount
+ *      properties:
+ *        address:
+ *          type: string
+ *        balance:
+ *          type: number
+ *        created:
+ *          type: string
+ *        isAdmin:
+ *          type: bool
+ *        nftCount:
+ *          type: number
+ */
+/**
+ * @openapi
+ * /api/admin/get-user:
+ *   get:
+ *     tags:
+ *     - admin
+ *     summary: Get User for adminpage.
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     parameters:
+ *       - in: query
+ *         name: pageIndex
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Enter page index.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Enter page size.
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: search for name
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: ["ASC","DESC"]
+ *           default: "DESC"
+ *         description: The order direction
+ *     responses:
+ *       200:
+ *         description: A list of user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/users'
+ *                 total:
+ *                   type: integer
+ *                 pageIndex:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *       400:
+ *         description: The parameters used for the API are incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Wrong username or password
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Server Error
+ */
+app.get('/api/admin/get-user', async (req, res) => {
+  const pageIndex = parseInt(req.query.pageIndex as string) || 1;
+  const pageSize = parseInt(req.query.pageSize as string) || 10;
+  const filter = (req.query.search as string);
+  const order = (req.query.order as string) === 'ASC' ? 'ASC' : 'DESC';
+ 
+  const result= await userService.getUserbyAdmin(pageIndex,pageSize,order,filter)
+  // const result = await userService.getTransactionUser(userID,pageIndex,pageSize,order,filter)
+  // console.log(result);
+  if(result){
+    res.status(200).json({ 
+      success: true, 
+      message:"Success",
+      data : result //JSON.parse(result)
+    })
+  }else{
+    res.status(400).json({ 
+      success: false, 
+      message:" Fail to get record",
+      data : null //JSON.parse(result)
+    })
+  }
+
+})
+
+/**
+ * @openapi
+ * /api/admin/update-user:
+ *   post:
+ *     tags:
+ *     - admin
+ *     summary: Update User Role.
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                userId: 
+ *                  type: number
+ *                  description:  User 
+ *                isRole: 
+ *                  type: number
+ *                  description:  Role
+ *     responses:
+ *       200:
+ *         description: Successful, includes the JSON format from the body of the response (each API may differ)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: true
+ *       400:
+ *         description: The parameters used for the API are incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Wrong username or password
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Server Error
+ */
+app.post('/api/admin/update-user', async (req, res) => {
+  const data = req.body;
+
+  const result= await userService.updateRoleUser(data.userId,data.isRole)
+  if(result.success){
+    res.status(200).json({ 
+      success: true, 
+      message:result.message,
+      // data : result //JSON.parse(result)
+    })
+  }else{
+    res.status(400).json({ 
+      success: false, 
+      message:result.message,
+      // data : result //JSON.parse(result)
+    })
+  }
+
+})
+
+
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    nfts:
+ *      type: object
+ *      required:
+ *        - nftId
+ *        - userAddress
+ *        - nftAddress
+ *        - nftName
+ *        - nftImage
+ *        - isListed
+ *        - isTrending
+ *        - price
+ *        - created
+ *      properties:
+ *        nftId:
+ *          type: number
+ *        userAddress:
+ *          type: string
+ *        nftAddress:
+ *          type: string
+ *        nftName:
+ *          type: string
+ *        nftImage:
+ *          type: string
+ *        isListed:
+ *          type: number
+ *        isTrending:
+ *          type: number
+ *        price:
+ *          type: number
+ *        created:
+ *          type: string
+ */
+/**
+ * @openapi
+ * /api/admin/get-nfts:
+ *   get:
+ *     tags:
+ *     - admin
+ *     summary: Get nft for adminpage.
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     parameters:
+ *       - in: query
+ *         name: pageIndex
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Enter page index.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Enter page size.
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: search for name
+ *       - in: query
+ *         name: isList
+ *         schema:
+ *           type: boolean
+ *           default: false
+ *         description: List NFT in market 
+ *     responses:
+ *       200:
+ *         description: A list of user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/nfts'
+ *                 total:
+ *                   type: integer
+ *                 pageIndex:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *       400:
+ *         description: The parameters used for the API are incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Wrong username or password
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Server Error
+ */
+app.get('/api/admin/get-nfts', async (req, res) => {
+  const pageIndex = parseInt(req.query.pageIndex as string) || 1;
+  const pageSize = parseInt(req.query.pageSize as string) || 10;
+  const filter = (req.query.search as string);
+  const isList = req.query.isList === 'true' ? true : false;
+  const result = await nftService.getNftsByAdmin(pageIndex,pageSize,filter,isList)
+  // const result= await userService.getUserAdmin(pageIndex,pageSize,order,filter)
+  // const result = await userService.getTransactionUser(userID,pageIndex,pageSize,order,filter)
+  // console.log(result);
+  if(result){
+    res.status(200).json({ 
+      success: true, 
+      message:"Success",
+      data : result //JSON.parse(result)
+    })
+  }else{
+    res.status(200).json({ 
+      success: true, 
+      message:" Fail to get record",
+      data : null //JSON.parse(result)
+    })
+  }
+
+});
+
+
+/**
+ * @openapi
+ * /api/admin/update-nft-is-trending:
+ *   post:
+ *     tags:
+ *     - admin
+ *     summary: Update User Role.
+ *     description: Returns a simple status message to indicate that the service is running.
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                nftId: 
+ *                  type: number
+ *                  description:  User 
+ *                isTrending: 
+ *                  type: number
+ *                  description:  Role
+ *     responses:
+ *       200:
+ *         description: Successful, includes the JSON format from the body of the response (each API may differ)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: true
+ *       400:
+ *         description: The parameters used for the API are incorrect
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Wrong username or password
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                    type: bool
+ *                    default: false
+ *                  message:
+ *                    type: string
+ *                    default: Server Error
+ */
+app.post('/api/admin/update-nft-is-trending', async (req, res) => {
+  const data = req.body;
+
+  const result= await nftService.updateIsTrendingNft(data.nftId,data.isTrending)
+  if(result.success){
+    res.status(200).json({ 
+      success: true, 
+      message:result.message,
+      // data : result //JSON.parse(result)
+    })
+  }else{
+    res.status(400).json({ 
+      success: false, 
+      message:result.message,
+      // data : result //JSON.parse(result)
+    })
+  }
+
+})

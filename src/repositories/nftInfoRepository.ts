@@ -259,7 +259,7 @@ const getManyNftListed = async (pageIndex: number, pageSize: number,order?:"DESC
                                      
     } catch (error) {
         console.log(error);
-        
+        return null;
     }
 }
 
@@ -410,4 +410,88 @@ console.log(userInfo?.address);
 
 
 }
-export {addNewNft, syncNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser,transferNft}
+
+const getNftsByAdmin = async (pageIndex: number, pageSize: number, search?:string,isList?:boolean) =>{
+    try {
+        const queryBuilderNftByAdmin = ormconfig
+        .getRepository(Nft)
+        .createQueryBuilder('n')
+        .leftJoinAndSelect('n.nftListed', 'nftListed')
+        .leftJoinAndSelect('n.userID', 'user')
+        .select([
+            'n.id as id',
+            'n.nftName as nftName',
+            'n.image as nftImage',
+            'n.mintAddress as nftAddress',
+            'user.address as userAddress',
+            'n.created_date as created',
+            "nftListed.isList as isListed",
+            "nftListed.isTrending as isTrending",
+            "nftListed.price as price",
+            // 'n.isList',
+            // "nftListed.nftName",
+            // "nftListed.image"
+        ])
+        .where("n.is_delete = 0")
+        if(search){
+            queryBuilderNftByAdmin.andWhere("LOWER(n.nftName) LIKE LOWER(:search)", { search: `%${search}%` });
+        }
+        if(isList){
+            queryBuilderNftByAdmin.andWhere("nftListed.isList = 1");
+        }
+        const nftEntities = await queryBuilderNftByAdmin
+        .offset((pageIndex - 1) * pageSize)
+        .limit(pageSize)
+        .getRawMany(); 
+        let res: { id: number; nftName: string; nftImage: string; nftAddress:string; userAddress:string; created:string; price: number | null; isList: boolean | null; isTrending:boolean |null   }[] = []; //nftID:number
+        nftEntities.forEach((record) =>{
+            res.push({
+                id:record.id,
+                nftName:record.nftName,
+                nftImage:record.nftImage,
+                nftAddress:record.nftAddress,
+                userAddress:record.userAddress,
+                created:record.created,
+                isList:record.isList,
+                isTrending:record.isTrending,
+                price:record.price != 0 ? (record.price/Math.pow(10, 9)) : 0,
+                // nftID:record.nftID,
+      
+            })
+        })
+        return res;
+    } catch (error:any) {
+        return null
+    }
+    
+}
+
+const updateIsTrendingNft = async (nftId:number, isTrending:number) : Promise<BaseResponse>=>{
+    try {
+        const nftRepository = await connectionManager.getRepository(Nft)
+        const nftInfo = await nftRepository.findOneBy({ id: nftId });
+        if (nftInfo == undefined || nftInfo == null) {
+            return {
+                success : false,
+                message: "Not find user ",
+                message_code: 400,
+            };
+        }
+        // const user = await userRepository.update({ id: userID }, {
+        //     roleID : isRole
+        // });
+        return {
+            success : true,
+            message: "Update role success ",
+            message_code: 200,
+        }
+    } catch (error:any) {
+        return {
+            success : false,
+            message: error.message,
+            message_code: 400,
+        }
+    }
+   
+}
+export {addNewNft, syncNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser,transferNft, getNftsByAdmin, updateIsTrendingNft}
