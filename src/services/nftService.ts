@@ -79,8 +79,8 @@ const getNftsByAdmin = async (pageIndex: number, pageSize: number, search?:strin
     const result = nftRepository.getNftsByAdmin(pageIndex,pageSize,search,isList);
     return result;
 }
-const updateIsTrendingNft = async(nftId:number, isTrending:number)=>{
-    const result = nftRepository.updateIsTrendingNft(nftId,isTrending);
+const updateIsTrendingNft = async(nftID:number, isTrending:boolean)=>{
+    const result = nftRepository.updateIsTrendingNft(nftID,isTrending);
     return result;
   }
 export {createNft, syncNftToMarket, getNftByID, getNftListed, getNftByUser, transferNft, getNftsByAdmin, updateIsTrendingNft}

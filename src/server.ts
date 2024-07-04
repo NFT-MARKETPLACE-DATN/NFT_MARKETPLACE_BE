@@ -82,7 +82,7 @@ app.get('/api/mint-nft', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: true
  *       400:
  *         description: The parameters used for the API are incorrect
@@ -92,7 +92,7 @@ app.get('/api/mint-nft', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -105,7 +105,7 @@ app.get('/api/mint-nft', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -167,7 +167,7 @@ app.get('/api/account/login', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: true
  *       400:
  *         description: The parameters used for the API are incorrect
@@ -177,7 +177,7 @@ app.get('/api/account/login', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -190,7 +190,7 @@ app.get('/api/account/login', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -293,7 +293,7 @@ app.post('/api/account/update-background', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: true
  *                  message:
  *                     type: string
@@ -306,7 +306,7 @@ app.post('/api/account/update-background', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -319,7 +319,7 @@ app.post('/api/account/update-background', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -412,7 +412,7 @@ app.post('/api/nft/create-nft', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: true
  *                  message:
  *                     type: string
@@ -425,7 +425,7 @@ app.post('/api/nft/create-nft', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -438,7 +438,7 @@ app.post('/api/nft/create-nft', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -493,7 +493,7 @@ app.post('/api/nft/sync-nft-market', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: true
  *       400:
  *         description: The parameters used for the API are incorrect
@@ -503,7 +503,7 @@ app.post('/api/nft/sync-nft-market', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -516,7 +516,7 @@ app.post('/api/nft/sync-nft-market', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -634,7 +634,7 @@ app.get('/api/nft/get-nft-by-id', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -647,7 +647,7 @@ app.get('/api/nft/get-nft-by-id', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -751,7 +751,7 @@ app.get('/api/nft/get-nft-listed', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -764,7 +764,7 @@ app.get('/api/nft/get-nft-listed', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -882,7 +882,7 @@ app.get('/api/nft/get-nft-by-user', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -895,7 +895,7 @@ app.get('/api/nft/get-nft-by-user', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -948,7 +948,7 @@ app.get('/api/nft/get-transaction', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: true
  *       400:
  *         description: The parameters used for the API are incorrect
@@ -958,7 +958,7 @@ app.get('/api/nft/get-transaction', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -971,7 +971,7 @@ app.get('/api/nft/get-transaction', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -1022,7 +1022,7 @@ app.get('/api/nft/transfer-nft', async (req, res) => {
  *        created:
  *          type: string
  *        isAdmin:
- *          type: bool
+ *          type: boolean
  *        nftCount:
  *          type: number
  */
@@ -1085,7 +1085,7 @@ app.get('/api/nft/transfer-nft', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -1098,7 +1098,7 @@ app.get('/api/nft/transfer-nft', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -1159,7 +1159,7 @@ app.get('/api/admin/get-user', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: true
  *       400:
  *         description: The parameters used for the API are incorrect
@@ -1169,7 +1169,7 @@ app.get('/api/admin/get-user', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -1182,7 +1182,7 @@ app.get('/api/admin/get-user', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -1303,7 +1303,7 @@ app.post('/api/admin/update-user', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -1316,7 +1316,7 @@ app.post('/api/admin/update-user', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -1365,10 +1365,10 @@ app.get('/api/admin/get-nfts', async (req, res) => {
  *              properties:
  *                nftId: 
  *                  type: number
- *                  description:  User 
+ *                  description:  Nft 
  *                isTrending: 
- *                  type: number
- *                  description:  Role
+ *                  type: boolean
+ *                  description:  isTrending
  *     responses:
  *       200:
  *         description: Successful, includes the JSON format from the body of the response (each API may differ)
@@ -1378,7 +1378,7 @@ app.get('/api/admin/get-nfts', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: true
  *       400:
  *         description: The parameters used for the API are incorrect
@@ -1388,7 +1388,7 @@ app.get('/api/admin/get-nfts', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string
@@ -1401,7 +1401,7 @@ app.get('/api/admin/get-nfts', async (req, res) => {
  *               type: object
  *               properties:
  *                  success:
- *                    type: bool
+ *                    type: boolean
  *                    default: false
  *                  message:
  *                    type: string

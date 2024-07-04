@@ -452,7 +452,7 @@ const getNftsByAdmin = async (pageIndex: number, pageSize: number, search?:strin
                 nftAddress:record.nftAddress,
                 userAddress:record.userAddress,
                 created:record.created,
-                isList:record.isList,
+                isList:record.isListed,
                 isTrending:record.isTrending,
                 price:record.price != 0 ? (record.price/Math.pow(10, 9)) : 0,
                 // nftID:record.nftID,
@@ -466,26 +466,32 @@ const getNftsByAdmin = async (pageIndex: number, pageSize: number, search?:strin
     
 }
 
-const updateIsTrendingNft = async (nftId:number, isTrending:number) : Promise<BaseResponse>=>{
+const updateIsTrendingNft = async (nftID:number, isTrending:boolean) : Promise<BaseResponse>=>{
     try {
         const nftRepository = await connectionManager.getRepository(Nft)
-        const nftInfo = await nftRepository.findOneBy({ id: nftId });
+        const nftInfo = await nftRepository.findOneBy({ id: nftID });
         if (nftInfo == undefined || nftInfo == null) {
             return {
                 success : false,
-                message: "Not find user ",
+                message: "Not find record nft ",
                 message_code: 400,
             };
         }
-        // const user = await userRepository.update({ id: userID }, {
-        //     roleID : isRole
-        // });
+        const nftListedRepository = await connectionManager.getRepository(ListedNFT)
+        const nftListedInfo = await nftListedRepository.findOneBy({ nftID: nftID });
+        // console.log(nftListedInfo);
+        
+        const user = await nftListedRepository.update({ nftID: nftID }, {
+            isTrending : isTrending
+        });
         return {
             success : true,
             message: "Update role success ",
             message_code: 200,
         }
     } catch (error:any) {
+        console.log(error);
+        
         return {
             success : false,
             message: error.message,
