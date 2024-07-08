@@ -83,7 +83,6 @@ export const tranferNftToUser = async (userID:number, nftID:number, userBuyNftAd
    try {
     const result = await transferNftBlockChain(userBuyNftAddress, mintAddress, tokenAccountUserSell);
     if(result.status){
-        
         await connectionManager.query(
             `CALL proc_transfer_buy_nft(?, ?, ?, ?, ?, @o_code)`,
             [
