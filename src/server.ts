@@ -3,6 +3,7 @@ import app from './app'
 // import { main } from "servers/tranferSOL";
 import * as userService from './services/userService';
 import * as nftService from './services/nftService';
+import * as transferService from "./services/transferNftToUserService";
 const PORT = 3100
 
 app.listen(PORT, async () => {
@@ -917,11 +918,31 @@ app.get('/api/nft/get-transaction', async (req, res) => {
     data : result //JSON.parse(result)
   })
 })
-
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    transfer-nft:
+ *      type: object
+ *      required:
+ *        - userBuyAddress
+ *        - mintAddress
+ *        - tokenAccount
+ *        - transaction
+ *      properties:
+ *        userBuyAddress:
+ *          type: string
+ *        mintAddress:
+ *          type: string
+ *        tokenAccount:
+ *          type: string
+ *        transactionBuy:
+ *          type: string
+ */
 /**
  * @openapi
  * /api/nft/transfer-nft:
- *   get:
+ *   post:
  *     tags:
  *     - nftApi
  *     summary: Transfer NFT 
@@ -939,6 +960,12 @@ app.get('/api/nft/get-transaction', async (req, res) => {
  *         schema:
  *           type: number
  *         description: Enter nftId.
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *              $ref: '#/components/schemas/transfer-nft'
  *     responses:
  *       200:
  *         description: Successful, includes the JSON format from the body of the response (each API may differ)
@@ -977,26 +1004,31 @@ app.get('/api/nft/get-transaction', async (req, res) => {
  *                    type: string
  *                    default: Server Error
  */
-app.get('/api/nft/transfer-nft', async (req, res) => {
+app.post('/api/nft/transfer-nft', async (req, res) => {
   let nftID = Number(req.query.nftId);
   const userID = Number(req.query.userId);
+  const data = req.body;
   if (nftID || userID) {
 
-    const result = await nftService.transferNft(userID,nftID);
-    // if(result.success){
+    const result = await transferService.tranferNftToUser(userID,nftID,data.userBuyAddress,data.mintAddress, data.tokenAccount,data.transactionBuy);
+    if(result.status){
       res.status(200).json({ 
         success: true, 
-        // message: result.message,
+        message: result.message,
         // data : result.data
       })
-    // }else{
-    //   res.status(500).json({ 
-    //     success: false, 
-    //     message: result.message,
-    //     data : null
-    //   })
-    // }
-
+    }else{
+      res.status(500).json({ 
+        success: false, 
+        message: result.message,
+        data : null
+      })
+    }
+      // res.status(200).json({ 
+      //   success: true, 
+      //   // message: result.message,
+      //   // data : result.data
+      // })
   } else {
     res.status(400).json({ success: false, message: 'Address and NFT is required' })
   }

@@ -66,10 +66,10 @@ const getNftListed = async (pageIndex:number,pageSize:number,order?:"DESC"|"ASC"
     // }
     // return result;
 };
-const transferNft = async (userID:number,nftID:number)=>{
-    await nftRepository.transferNft(userID,nftID);
+// const transferNft = async (userID:number,nftID:number)=>{
+//     await nftRepository.transferNft(userID,nftID);
 
-}
+// }
 const getNftByUser = async (userID:number, pageIndex: number, pageSize: number, order?:"DESC"|"ASC", search?:string,isListed?:boolean,isCreacted?:boolean)=>{
     const result =  await nftRepository.getManyNftByUser(userID,pageIndex,pageSize,order,search,isListed,isCreacted);
     return result;
@@ -83,4 +83,4 @@ const updateIsTrendingNft = async(nftID:number, isTrending:boolean)=>{
     const result = nftRepository.updateIsTrendingNft(nftID,isTrending);
     return result;
   }
-export {createNft, syncNftToMarket, getNftByID, getNftListed, getNftByUser, transferNft, getNftsByAdmin, updateIsTrendingNft}
+export {createNft, syncNftToMarket, getNftByID, getNftListed, getNftByUser, getNftsByAdmin, updateIsTrendingNft}

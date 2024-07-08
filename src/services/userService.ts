@@ -1,5 +1,5 @@
 import * as userRepository from "../repositories/userInfoRepository";
-import { BaseResponse,GenericBaseResponse } from "models/base.response";
+import { BaseResponse,GenericBaseResponse } from "../models/base.response";
 import {UserInfoModel , UpdateUserModel, Attribute} from "../models/userInfo.model";
 
  const userLogin = async (address:string): Promise<GenericBaseResponse<UserInfoModel>>=>{

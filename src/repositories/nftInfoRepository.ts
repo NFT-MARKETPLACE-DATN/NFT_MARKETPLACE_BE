@@ -98,6 +98,7 @@ const syncNftToMarket = async (data:NftListModel,userID:number,isAction:boolean)
                 try {
                     await nftListRepository.update({nftID:data.nftID},{
                         isList:false,
+                        isTrending:false
                     });
                     if(isAction){
                         const transaction = data?.transaction ? data.transaction : null;
@@ -400,16 +401,16 @@ const addTransaction = async (actionType:number,transaction:string | null,userID
     }
 }
 
-const transferNft = async(userID:number,nftID:number,) =>{
-    const transactionRepository = await connectionManager.getRepository(TransfersUser);
-    const userRepository = connectionManager.getRepository(User);
-    const userInfo = await userRepository.findOneBy({id:userID});
-    const nft = await connectionManager.getRepository(Nft)
-                .createQueryBuilder('nft');
-console.log(userInfo?.address);
+// const transferNft = async(userID:number,nftID:number,) =>{
+//     const transactionRepository = await connectionManager.getRepository(TransfersUser);
+//     const userRepository = connectionManager.getRepository(User);
+//     const userInfo = await userRepository.findOneBy({id:userID});
+//     const nft = await connectionManager.getRepository(Nft)
+//                 .createQueryBuilder('nft');
+// console.log(userInfo?.address);
 
 
-}
+// }
 
 const getNftsByAdmin = async (pageIndex: number, pageSize: number, search?:string,isList?:boolean) =>{
     try {
@@ -500,4 +501,4 @@ const updateIsTrendingNft = async (nftID:number, isTrending:boolean) : Promise<B
     }
    
 }
-export {addNewNft, syncNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser,transferNft, getNftsByAdmin, updateIsTrendingNft}
+export {addNewNft, syncNftToMarket , getNftByID, getManyNftListed, addTransaction , getManyNftByUser, getNftsByAdmin, updateIsTrendingNft}
